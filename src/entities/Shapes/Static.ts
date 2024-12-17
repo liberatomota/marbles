@@ -4,7 +4,7 @@ import Game from "../Game";
 import Elevator from './Elevator';
 import Color from '../Color';
 import { degreesToRadians } from '../../utils/trignometry-utils';
-import { topLeftToCenter } from '../../utils/position-utils';
+import { offsetMatterBodyPosition, topLeftToCenter } from '../../utils/position-utils';
 import { earth as earthOptions } from '../../constants/world';
 
 const { Body, Bodies, Composite } = Matter;
@@ -28,7 +28,7 @@ export default class Static {
         // slope 1
         // this.addObject(-200, 100, this.width - 100, 10, 2, 'random');
         // this.makeFrame();
-        // this.makeGround();
+        this.makeGround();
         // this.makePiramid();
 
         const p1 = { x: 100, y: 100 };
@@ -60,18 +60,8 @@ export default class Static {
         const mPolygon = Bodies.fromVertices(0, 0, [vertices], earthOptions);
         mPolygon.label = 'ground';
 
-        const bounds = mPolygon.bounds;
-        const offsetX = mPolygon.position.x - bounds.min.x;
-        const offsetY = mPolygon.position.y - bounds.min.y;
-
-        // Desired top-left position
-        const topLeftX = 100;
-        const topLeftY = 100;
+        const { offsetX, offsetY} = offsetMatterBodyPosition(mPolygon, 100, 200);
         
-        Body.setPosition(mPolygon, {
-            x: topLeftX + offsetX,
-            y: topLeftY + offsetY,
-        });
         Composite.add(this.game.engine.world, [mPolygon]);
         this.bodies.push(mPolygon);
         
@@ -81,13 +71,10 @@ export default class Static {
             id: mPolygon.id.toString(),
             points: points,
             fill: 'black',
-            // stroke: 'black',
             strokeWidth: 2,
             closed: true,
-            offsetX: topLeftX + offsetX,
-            offsetY: topLeftY + offsetY,
-            // x: topLeftX,
-            // y: topLeftY
+            offsetX,
+            offsetY,
         });
 
         this.elements.set(mPolygon.id, kPolygon);
