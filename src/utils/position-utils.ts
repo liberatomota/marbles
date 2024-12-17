@@ -26,8 +26,14 @@ export const linearInterpolation = (
   return { x, y };
 };
 
-export const offsetMatterBodyPosition = (body: Matter.Body, top: number, left: number) => {
+export const offsetMatterBodyPosition = (
+  body: Matter.Body,
+  top: number,
+  left: number,
+  setPosition = false
+) => {
   const bounds = body.bounds;
+  console.log("bounds", bounds);
   const offsetX = body.position.x - bounds.min.x;
   const offsetY = body.position.y - bounds.min.y;
 
@@ -35,10 +41,12 @@ export const offsetMatterBodyPosition = (body: Matter.Body, top: number, left: n
   const topLeftX = top;
   const topLeftY = left;
 
-  Body.setPosition(body, {
-    x: topLeftX + offsetX,
-    y: topLeftY + offsetY,
-  });
+  if (setPosition) {
+    Body.setPosition(body, {
+      x: topLeftX + offsetX,
+      y: topLeftY + offsetY,
+    });
+  }
 
   return { offsetX: topLeftX + offsetX, offsetY: topLeftY + offsetY };
 };

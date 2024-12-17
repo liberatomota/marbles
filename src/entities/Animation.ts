@@ -2,6 +2,7 @@ import Matter from 'matter-js';
 import Konva from "konva";
 import Game from "./Game";
 import { translatePosition } from '../utils/position-utils';
+import { radiansToDegrees } from '../utils/trignometry-utils';
 
 const Engine = Matter.Engine;
 const Composite = Matter.Composite;
@@ -60,6 +61,17 @@ export default class Animate {
                     const { x: kX, y: kY } = translatePosition(body);
                     element.x(body.position.x);
                     element.y(body.position.y);
+                }
+            }
+            if (body.label.includes('elevator')) {
+                const element = dinamicElements.get(body.id) as Konva.Group;
+                if (element) {
+                    const { x: kX, y: kY } = translatePosition(body);
+                    // element.x(body.position.x);
+                    // element.y(body.position.y);
+                    // element.x(kX);
+                    // element.y(kY);
+                    element.rotation(radiansToDegrees(body.angle));
                 }
             }
         }
