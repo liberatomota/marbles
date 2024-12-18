@@ -3,8 +3,8 @@ import Stage from './Konva/Stage';
 import Layer from './Konva/Layer';
 import Animation from './Animation';
 import Konva from 'konva';
-import Static from './Shapes/Static';
-import Dinamic from './Shapes/Dinamic';
+import Static from './Shapes/staticShapes/Static';
+import Dinamic from './Shapes/dinamicShapes/Dinamic';
 import { options as worldOptions } from '../constants/world';
 
 const { Engine, Render, Runner } = Matter;
@@ -59,9 +59,10 @@ export default class Game {
 
     init = () => {
         this.setupEvents();
-        this.engine.gravity.y = 0.7;
+        this.engine.gravity.y = 0.1;
         // this.engine.gravity.scale = worldOptions.gravitySF;
         this.static.addObjects();
+        this.dinamic.addObjects();
     }
 
     setupEvents = () => {

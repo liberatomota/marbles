@@ -1,7 +1,7 @@
-import { marble as marbleOptions } from "../../constants/world";
 import { Bodies, Body } from "matter-js";
-import { randomPosNeg, vx } from "../../utils/physics-utils";
-import Color from "../Color";
+import { marble as marbleOptions } from "../../../constants/world";
+import { randomPosNeg, vx } from "../../../utils/physics-utils";
+import Color from "../../Color";
 
 export default class Marble {
 

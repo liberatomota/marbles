@@ -29,10 +29,8 @@ export default class Animate {
             return;
         };
 
-        // console.log(this.game.engine.world.bodies);
-
         const bodies = this.game.engine.world.bodies;
-        console.log("bodies", bodies)
+        // console.log("bodies", bodies)
 
         for (let i = 0; i < bodies.length; i++) {
             const body = bodies[i];

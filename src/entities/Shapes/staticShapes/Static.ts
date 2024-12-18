@@ -1,11 +1,11 @@
 import Matter from 'matter-js';
 import Konva from 'konva';
-import Game from "../Game";
-import Elevator from './Elevator';
-import Color from '../Color';
-import { degreesToRadians } from '../../utils/trignometry-utils';
-import { copyAndMirrorBody, copyAndMirrorCompositeAxisX, mirrorBodyAxisX, offsetMatterBodyPosition, topLeftToCenter } from '../../utils/position-utils';
-import { earth as earthOptions } from '../../constants/world';
+import Game from "../../Game";
+import Piramid from './Piramid';
+import Color from '../../Color';
+import { degreesToRadians } from '../../../utils/trignometry-utils';
+import { copyAndMirrorBody, copyAndMirrorCompositeAxisX, mirrorBodyAxisX, offsetMatterBodyPosition, topLeftToCenter } from '../../../utils/position-utils';
+import { earth as earthOptions } from '../../../constants/world';
 
 const { Body, Bodies, Composite, World } = Matter;
 
@@ -20,8 +20,6 @@ export default class Static {
         this.game = game;
         this.width = this.game.stage.getAttr('width');
         this.height = this.game.stage.getAttr('height');
-
-
     }
 
     addObjects() {
@@ -31,9 +29,8 @@ export default class Static {
         this.makeGround();
         // this.makePiramid();
 
-        const p1 = { x: 100, y: 100 };
-        const p2 = { x: 100, y: 300 };
-        // const elevator = new Elevator(this.game, p1, p2, 'left');
+        const piramidFactory = new Piramid(this.game);
+        piramidFactory.createPiramid();
 
     }
 
@@ -47,29 +44,17 @@ export default class Static {
     }
 
     makeGround() {
-        const vertices = [
-            { x: this.game.width, y: 100 },
-            { x: this.game.width / 2 + 100, y: 90 },
-            { x: this.game.width / 2 + 100, y: 110 },
-            { x: this.game.width, y: 110 },
-            { x: this.game.width, y: 100 },
-        ];
-
-        const polygon = Bodies.fromVertices(0, 0, [vertices], earthOptions);
-        const { offsetX, offsetY } = offsetMatterBodyPosition(polygon, this.game.width / 2 + 100, 90);
-
-        Body.setPosition(polygon, {
-            // from the widht and heigh of the element calculate the offset
-            x: offsetX,
-            y: offsetY
-        });
-
+        const x = this.game.width / 2 + 50;
+        const y = 148.5;
+        const polygon = Bodies.rectangle(0, 0, this.game.width / 2 - 50, 5, earthOptions);
+        const { offsetX, offsetY } = offsetMatterBodyPosition(polygon, x, y);
+        Body.setPosition(polygon, {x: offsetX, y: offsetY });
         polygon.label = 'ground';
+        World.add(this.game.engine.world, polygon);
 
         
-        const mirrored = copyAndMirrorBody(polygon, this.game.width / 2);
-        
-        Composite.add(this.game.engine.world, [polygon, mirrored]);
+        // const mirrored = copyAndMirrorBody(polygon, this.game.width / 2);
+        // Composite.add(this.game.engine.world, [polygon, mirrored]);
     }
 
     makePiramid() {
