@@ -13,35 +13,70 @@ import Konva from "konva";
 
 const { Body, World, Bodies, Composite } = Matter;
 
-type RotateTo = "right" | "left";
+enum RotateToEnum {
+    RIGHT= "right",
+    LEFT= "left"
+  }
+
+type elevatorOptionsType = {
+    rotateTo: RotateToEnum,
+    angleOffset: number,
+    bucketReleaseAcelaration: number,
+    bucketMaxAngle: number,
+    bucketBaseHeight: number,
+    pathRadius: number,
+    numElevators: number,
+    bodyOption: Object
+}
+
+const ELEVATOR_DEFAULT_OPTIONS: elevatorOptionsType = {
+    rotateTo: RotateToEnum.LEFT,
+    angleOffset: 0.02,
+    bucketReleaseAcelaration: 0.1,
+    bucketMaxAngle: degreesToRadians(45),
+    bucketBaseHeight: 2,
+    pathRadius: 20,
+    numElevators: 3,
+    bodyOption: { friction: 0.1, frictionAir: 0.02, isStatic: true }
+};
 
 export default class Elevator {
   game: Game;
-  rotateTo: RotateTo = "right";
   p1: PointType = { x: 0, y: 0 };
   p2: PointType = { x: 0, y: 0 };
   pivot1: Matter.Body | null = null;
   pivot2: Matter.Body | null = null;
   buckets: Matter.Body[] = [];
-  angleOffset = 0.02;
   bucketsAngles: number[] = [];
-  pathRadius = 20;
-  numElevators = 2;
   deployPoint: PointType = { x: 0, y: 0 };
-  options = { friction: 0.1, frictionAir: 0.02, isStatic: true };
+  deployPointMiddle: PointType = { x: 0, y: 0 };
+  options: elevatorOptionsType = ELEVATOR_DEFAULT_OPTIONS;
   constructor(game: Game) {
     this.game = game;
   }
 
-  createElevator(p1: PointType, p2: PointType, rotateTo: RotateTo = "right") {
-    this.rotateTo = rotateTo;
+  createElevator(
+    p1: PointType,
+    p2: PointType,
+    options?: elevatorOptionsType
+  ) {
     this.p1 = p1;
     this.p2 = p2;
+
+    this.options = {
+        ...this.options,
+        ...options
+    };
 
     const [pivot1, pivot2] = this.createPivots(this.p1, this.p2);
     this.pivot1 = pivot1;
     this.pivot2 = pivot2;
-    this.deployPoint = linearInterpolation(this.p1, this.p2, 0.15);
+    this.deployPoint = linearInterpolation(this.p1, this.p2, 0.3);
+    this.deployPointMiddle = linearInterpolation(
+      this.p1,
+      this.deployPoint,
+      1 / 3
+    );
 
     this.createBuckets(pivot1, pivot2);
     setInterval(this.moveBuckets, 1000 / 60);
@@ -54,22 +89,41 @@ export default class Elevator {
   }
 
   createBuckets(pivot1: Matter.Body, pivot2: Matter.Body) {
+
+    const { bucketBaseHeight, bodyOption, angleOffset, pathRadius, numElevators } = this.options;
     // Criar baldes
-    for (let i = 0; i < this.numElevators; i++) {
+    for (let i = 0; i < numElevators; i++) {
       const factor = 1 / (i + 1) - 0.1;
-      const x = pivot1.position.x + this.pathRadius;
+      const x = pivot1.position.x + pathRadius;
       const y = linearInterpolation(this.p1, this.p2, factor).y;
 
       // console.log(this.p1, this.p2)
-      console.log("factor", factor);
-      console.log("y", y);
+    //   console.log("factor", factor);
+    //   console.log("y", y);
 
-      const options = { friction: 0.1, frictionAir: 0.02, isStatic: true };
-
-      const bucketsBase = Bodies.rectangle(x, y, 12, 2, options);
-      const bucketsLeft = Bodies.rectangle(x - 5, y - 4, 5, 2, options);
+      const bucketsBase = Bodies.rectangle(
+        x,
+        y,
+        12,
+        bucketBaseHeight * 3,
+        bodyOption
+      );
+      bucketsBase.label = `bucket-base-${i}`;
+      const bucketsLeft = Bodies.rectangle(
+        x - 5,
+        y - 4,
+        5,
+        bucketBaseHeight,
+        bodyOption
+      );
       Body.setAngle(bucketsLeft, degreesToRadians(90));
-      const bucketsRight = Bodies.rectangle(x + 5, y - 4, 5, 2, options);
+      const bucketsRight = Bodies.rectangle(
+        x + 5,
+        y - 4,
+        5,
+        bucketBaseHeight,
+        bodyOption
+      );
       Body.setAngle(bucketsRight, degreesToRadians(90));
 
       const bucket = Body.create({
@@ -80,13 +134,12 @@ export default class Elevator {
         label: `buckets-${i}`,
       });
 
-      //   Body.scale(bucket, 1.4, 1);
-
       this.buckets.push(bucket);
     }
 
-    this.buckets.forEach(() => this.bucketsAngles.push(this.angleOffset));
-    this.buckets.map((b) => console.log(b.position));
+    this.buckets.forEach(() => this.bucketsAngles.push(angleOffset));
+
+    
     World.add(this.game.engine.world, this.buckets);
     return this.buckets;
   }
@@ -96,36 +149,138 @@ export default class Elevator {
       const bucket = this.buckets[index];
       let x = bucket.position.x;
       let y = bucket.position.y;
-      let bucketAngle = 0;
-      if (y > this.pivot1!.position.y && y < this.pivot2!.position.y) {
-        // desce
-        if (x < this.pivot1!.position.x) {
-          y = y - 1;
-          Body.setAngle(bucket, 0);
-        } else {
-          bucketAngle = y < this.deployPoint.y ? 0.1 : -0.1;
-          y = y + 1;
-        }
+      const pv1X = this.pivot1!.position.x;
+      const pv1Y = this.pivot1!.position.y;
+      //   const pv2X = this.pivot2!.position.x;
+      const pv2Y = this.pivot2!.position.y;
+      let bucketReleaseAngle = 0;
+
+      if (y > pv1Y && y < pv2Y) {
+        // VERTICAL MOVE
+        const { newY, angle } = this.verticalMove(bucket, x, y, pv1X, pv1Y);
+        y = newY;
+        bucketReleaseAngle = angle;
       } else {
+        // AROUND PIVOT
         Body.setAngle(bucket, 0);
         this.bucketsAngles[index] += 0.02;
-        const pivot =
-          bucket.position.y <= this.pivot1!.position.y
-            ? this.pivot1
-            : this.pivot2;
-        // roda esquerda
-        const angle = this.bucketsAngles[index] + index * Math.PI;
-        x = pivot!.position.x + Math.cos(angle) * this.pathRadius;
-        y = pivot!.position.y + Math.sin(angle) * this.pathRadius;
+        const { newX, newY } = this.rotateAroundPivot(x, y, index, pv1Y);
+        x = newX;
+        y = newY;
       }
 
       // Atualiza a posição do elevador
-      if (bucketAngle !== 0) {
-        const previewAngle = bucket.angle;
-        const newAngle = previewAngle + bucketAngle;
-        Body.setAngle(bucket, newAngle < 0 ? 0 : newAngle > 2 ? 2 : newAngle);
+      if (bucketReleaseAngle !== 0) {
+        const newAngle = this.getFinalBucketAngle(bucket, bucketReleaseAngle);
+        Body.setAngle(bucket, newAngle);
       }
       Body.setPosition(bucket, { x, y });
     }
   };
+
+  verticalMove = (
+    bucket: Matter.Body,
+    x: number,
+    y: number,
+    pv1X: number,
+    pv1Y: number
+  ) => {
+
+    const { rotateTo, bucketReleaseAcelaration: aceleration } = this.options;
+
+    const insideRelaseInterval = y < this.deployPoint.y;
+    let angle = 0;
+    let newY = 0;
+
+    if (x < pv1X) {
+      if (rotateTo === RotateToEnum.RIGHT) {
+        newY = y - 1;
+      } else {
+        angle = insideRelaseInterval ? -aceleration : aceleration;
+        newY = y + 1;
+        if (Math.floor(y) === Math.floor(this.deployPointMiddle.y)) {
+          this.overarchingBucketBase(bucket);
+        }
+      }
+    } else {
+      if (rotateTo === RotateToEnum.RIGHT) {
+        angle = insideRelaseInterval ? aceleration : -aceleration;
+        newY = y + 1;
+      } else {
+        newY = y - 1;
+      }
+    }
+
+    return { newY, angle };
+  };
+
+  rotateAroundPivot(x: number, y: number, index: number, pv1Y: number) {
+    const { rotateTo, pathRadius } = this.options;
+    const pivot = y <= pv1Y ? this.pivot1 : this.pivot2;
+    const angle = this.bucketsAngles[index] + index * Math.PI;
+    let newX = 0;
+    let newY = 0;
+
+    if (rotateTo === RotateToEnum.RIGHT ) {
+      newX = pivot!.position.x + Math.cos(angle) * pathRadius;
+      newY = pivot!.position.y + Math.sin(angle) * pathRadius;
+    } else {
+      newX = pivot!.position.x - Math.cos(angle) * pathRadius; // Inverted cosine for counterclockwise
+      newY = pivot!.position.y + Math.sin(angle) * pathRadius;
+    }
+
+    return { newX, newY };
+  }
+
+  getFinalBucketAngle(bucket: Matter.Body, bucketReleaseAngle: number) {
+    const {  rotateTo, bucketMaxAngle } = this.options;
+    const previewAngle = bucket.angle;
+    const maxAngle = bucketMaxAngle;
+    let newAngle = previewAngle + bucketReleaseAngle;
+    if (rotateTo === RotateToEnum.RIGHT) {
+      newAngle = newAngle < 0 ? 0 : newAngle > maxAngle ? maxAngle : newAngle;
+    } else {
+      newAngle = newAngle > 0 ? 0 : newAngle < -maxAngle ? -maxAngle : newAngle;
+    }
+
+    return newAngle;
+  }
+
+  overarchingBucketBase(bucket: Matter.Body) {
+    const pixel = 1;
+    const maxIndex = 8;
+    let index = 0;
+    let intervalUp: NodeJS.Timeout | null = null;
+    let intervalDown: NodeJS.Timeout | null = null;
+
+    const retract = () => {
+      if (index <= 0) {
+        clearInterval(intervalDown!); // Clear interval when fully retracted
+        intervalDown = null; // Ensure intervalDown is reset
+        return;
+      }
+      index--;
+      Body.setPosition(bucket, {
+        x: bucket.position.x + pixel + pixel / 1,
+        y: bucket.position.y + pixel, // Move up
+      });
+    };
+
+    const expand = () => {
+      if (index >= maxIndex) {
+        clearInterval(intervalUp!); // Stop upward movement
+        intervalUp = null; // Ensure intervalUp is reset
+        intervalDown = setInterval(retract, 10); // Start retracting
+        return;
+      }
+      index++;
+      Body.setPosition(bucket, {
+        x: bucket.position.x - pixel - pixel / 1,
+        y: bucket.position.y - pixel, // Move down
+      });
+    };
+
+    // Start expanding
+    intervalUp = setInterval(expand, 20);
+  }
 }

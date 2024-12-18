@@ -89,3 +89,18 @@ export const  copyAndMirrorCompositeAxisX = (originalComposite: Matter.Composite
       bodies: newParts
   });
 }
+
+export const rotateAroundPivot = (body: Matter.Body, pivot: PointType, angle: number) => {
+  const sin = Math.sin(angle);
+  const cos = Math.cos(angle);
+
+  // Offset vector from pivot to the body's center
+  const offsetX = body.position.x - pivot.x;
+  const offsetY = body.position.y - pivot.y;
+
+  // New position after rotation
+  const newX = pivot.x + (offsetX * cos - offsetY * sin);
+  const newY = pivot.y + (offsetX * sin + offsetY * cos);
+
+  return { newX, newY };
+}

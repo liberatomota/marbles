@@ -21,9 +21,8 @@ export default class Dinamic {
 
     addObjects() {
         this.elevatorFactory.createElevator(
-            { x: this.game.width / 2 + 100, y: 45 },
-            { x: this.game.width / 2 + 100, y: 155 },
-            'left'
+            { x: this.game.width / 2 + 67, y: 45 },
+            { x: this.game.width / 2 + 67, y: 155 },
         );
     }
 
