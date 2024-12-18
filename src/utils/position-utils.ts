@@ -50,3 +50,42 @@ export const offsetMatterBodyPosition = (
 
   return { offsetX: topLeftX + offsetX, offsetY: topLeftY + offsetY };
 };
+
+
+export const mirrorBodyAxisX = (body: Matter.Body, axisX = 0) => {
+  const mirrored = {...body}; // Copy properties
+  mirrored.position.x = axisX * 2 - body.position.x;
+  mirrored.position.y = body.position.y;
+  mirrored.angle = -body.angle;
+  return mirrored;
+}
+
+
+export const copyAndMirrorBody = (original: Matter.Body, axisX = 0) => {
+  const newPosition = {
+      x: axisX * 2 - original.position.x, // Reflect across axisX
+      y: original.position.y // Keep the same y-coordinate
+  };
+
+  return Matter.Bodies.fromVertices(
+      newPosition.x,
+      newPosition.y,
+      [original.vertices.reverse()],
+      {
+          angle: -original.angle, // Mirror the angle
+          isStatic: original.isStatic, // Preserve static property
+          render: { ...original.render } // Copy rendering options
+      }
+  );
+}
+
+export const  copyAndMirrorCompositeAxisX = (originalComposite: Matter.Composite, axisX = 0) => {
+  const newParts = originalComposite.bodies.map(body =>
+      copyAndMirrorBody(body, axisX)
+  );
+
+  return Matter.Composite.create({
+      label: `Mirrored-${originalComposite.label}`,
+      bodies: newParts
+  });
+}

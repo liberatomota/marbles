@@ -4,10 +4,10 @@ import Game from "../Game";
 import Elevator from './Elevator';
 import Color from '../Color';
 import { degreesToRadians } from '../../utils/trignometry-utils';
-import { offsetMatterBodyPosition, topLeftToCenter } from '../../utils/position-utils';
+import { copyAndMirrorBody, copyAndMirrorCompositeAxisX, mirrorBodyAxisX, offsetMatterBodyPosition, topLeftToCenter } from '../../utils/position-utils';
 import { earth as earthOptions } from '../../constants/world';
 
-const { Body, Bodies, Composite } = Matter;
+const { Body, Bodies, Composite, World } = Matter;
 
 export default class Static {
     game: Game;
@@ -21,7 +21,7 @@ export default class Static {
         this.width = this.game.stage.getAttr('width');
         this.height = this.game.stage.getAttr('height');
 
-        
+
     }
 
     addObjects() {
@@ -33,13 +33,11 @@ export default class Static {
 
         const p1 = { x: 100, y: 100 };
         const p2 = { x: 100, y: 300 };
-
-        const elevator = new Elevator(this.game, p1, p2);
+        // const elevator = new Elevator(this.game, p1, p2, 'left');
 
     }
 
     makeFrame() {
-
         const angle = 0;
         const color = 'black';
         this.addObject(0, 0, 3, this.height, angle, color);
@@ -51,36 +49,27 @@ export default class Static {
     makeGround() {
         const vertices = [
             { x: this.game.width, y: 100 },
-            { x: 100, y: 130 },
-            { x: 100, y: 140 },
-            { x: this.game.width, y: 140 },
+            { x: this.game.width / 2 + 100, y: 90 },
+            { x: this.game.width / 2 + 100, y: 110 },
+            { x: this.game.width, y: 110 },
             { x: this.game.width, y: 100 },
         ];
 
-        const mPolygon = Bodies.fromVertices(0, 0, [vertices], earthOptions);
-        mPolygon.label = 'ground';
+        const polygon = Bodies.fromVertices(0, 0, [vertices], earthOptions);
+        const { offsetX, offsetY } = offsetMatterBodyPosition(polygon, this.game.width / 2 + 100, 90);
 
-        const { offsetX, offsetY} = offsetMatterBodyPosition(mPolygon, 100, 200);
-        
-        Composite.add(this.game.engine.world, [mPolygon]);
-        this.bodies.push(mPolygon);
-        
-        const points = mPolygon.vertices.flatMap((v) => [v.x , v.y]);
-
-        const kPolygon = new Konva.Line({
-            id: mPolygon.id.toString(),
-            points: points,
-            fill: 'black',
-            strokeWidth: 2,
-            closed: true,
-            offsetX,
-            offsetY,
+        Body.setPosition(polygon, {
+            // from the widht and heigh of the element calculate the offset
+            x: offsetX,
+            y: offsetY
         });
 
-        this.elements.set(mPolygon.id, kPolygon);
-        this.game.layer.add(kPolygon);
-        this.game.layer.draw();
+        polygon.label = 'ground';
 
+        
+        const mirrored = copyAndMirrorBody(polygon, this.game.width / 2);
+        
+        Composite.add(this.game.engine.world, [polygon, mirrored]);
     }
 
     makePiramid() {
@@ -94,37 +83,8 @@ export default class Static {
         mPiramid.label = 'piramid';
         mPiramid.render.fillStyle = 'red';
 
-        const bounds = mPiramid.bounds;
-        const offsetX = mPiramid.position.x - bounds.min.x;
-        const offsetY = mPiramid.position.y - bounds.min.y;
-
-        // Desired top-left position
-        const topLeftX = this.game.width / 2 - 75;
-        const topLeftY = 25;
-        
-        Body.setPosition(mPiramid, {
-            x: topLeftX + offsetX,
-            y: topLeftY + offsetY,
-        });
-        Composite.add(this.game.engine.world, [mPiramid]);
+        World.add(this.game.engine.world, [mPiramid]);
         this.bodies.push(mPiramid);
-        
-        const points = mPiramid.vertices.flatMap((v) => [v.x , v.y]);
-
-        const kPiramid = new Konva.Line({
-            id: mPiramid.id.toString(),
-            points: points,
-            fill: 'black',
-            strokeWidth: 2,
-            closed: true,
-            offsetX: topLeftX + offsetX,
-            offsetY: topLeftY + offsetY,
-        });
-
-        this.elements.set(mPiramid.id, kPiramid);
-        this.game.layer.add(kPiramid);
-        this.game.layer.draw();
-
     }
 
     addObject(x: number, y: number, width: number, height: number, angle: number = 0, color: string = 'black') {
@@ -135,12 +95,6 @@ export default class Static {
         mRect.label = 'ground';
         Body.setAngle(mRect, degreesToRadians(angle));
         this.bodies.push(mRect);
-        Composite.add(this.game.engine.world, [mRect]);
-
-        const kRect = new Konva.Rect({ id: mRect.id.toString(), x, offsetX: width / 2, y, offsetY: height / 2, width, height, fill: new Color(color, 1).rgb });
-        kRect.rotation(angle);
-        this.elements.set(mRect.id, kRect);
-        this.game.layer.add(kRect);
-        this.game.layer.draw();
+        World.add(this.game.engine.world, [mRect]);
     }
 }

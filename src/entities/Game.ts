@@ -75,7 +75,7 @@ export default class Game {
 
     onMouseClick = (event: MouseEvent) => {
         console.log("event", event);
-        const radius = 5;
+        const radius = 3;
         const x = event.offsetX;
         const y = event.offsetY;
         this.dinamic.addMarble(x, y, radius);
