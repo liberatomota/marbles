@@ -7,7 +7,7 @@ export default class Marble {
 
     constructor() { }
 
-    createMarble(x: number, y: number, radius: number, color: string, label: string, isStatic = false) {
+    create(x: number, y: number, radius: number, color: string, label: string, isStatic = false) {
 
         const _color = new Color(color, 1).rgb;
 

@@ -29,8 +29,7 @@ export default class Static {
         this.makeGround();
         // this.makePiramid();
 
-        const piramidFactory = new Piramid(this.game);
-        piramidFactory.createPiramid();
+        new Piramid(this.game);
 
     }
 

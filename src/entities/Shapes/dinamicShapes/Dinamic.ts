@@ -9,26 +9,27 @@ const { Composite } = Matter;
 
 export default class Dinamic {
     game: Game;
-    marbleFactory: Marble;
-    elevatorFactory: Elevator;
+    marble: Marble;
+    elevator: Elevator;
     bodies: Matter.Body[] = [];
     elements: Map<number, Konva.Node> = new Map();
     constructor(game: Game) {
         this.game = game;
-        this.marbleFactory = new Marble();
-        this.elevatorFactory = new Elevator(this.game);
+        this.marble = new Marble();
+        this.elevator = new Elevator(this.game);
     }
 
     addObjects() {
-        this.elevatorFactory.createElevator(
-            { x: this.game.width / 2 + 67, y: 45 },
-            { x: this.game.width / 2 + 67, y: 155 },
+        this.elevator.create(
+            { x: this.game.width / 2 + 100, y: 45 },
+            { x: this.game.width / 2 + 100, y: 150 },
+            { bucketShouldBounce: false },
         );
     }
 
     addMarble(x: number, y: number, radius: number) {
 
-        const mMarble = this.marbleFactory.createMarble(x, y, radius, 'random', 'marble');
+        const mMarble = this.marble.create(x, y, radius, 'random', 'marble');
         this.bodies.push(mMarble);
         Composite.add(this.game.engine.world, [mMarble]);
 

@@ -41,7 +41,7 @@ export default class TrapDoor {
       this.bodyOptions
     );
     const pivot = Bodies.circle(0, 0, 2, this.bodyOptions);
-    const lever = Bodies.circle(-this.width / 2, 0, 2, this.bodyOptions);
+    const lever = Bodies.circle(-this.width / 2, 0, 1, this.bodyOptions);
     this.trapDoorBody = Body.create({
       parts: [lever, pivot, trapdoor],
       ...this.bodyOptions,
@@ -95,6 +95,6 @@ export default class TrapDoor {
     };
 
     // Start expanding
-    intervalOpen = setInterval(open, 20);
+    intervalOpen = setInterval(open, 10);
   }
 }
