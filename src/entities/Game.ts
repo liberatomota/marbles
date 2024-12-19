@@ -5,6 +5,7 @@ import Animation from './Animation';
 import Konva from 'konva';
 import Static from './Shapes/staticShapes/Static';
 import Dinamic from './Shapes/dinamicShapes/Dinamic';
+import Colision from './Colision';
 import { options as worldOptions } from '../constants/world';
 
 const { Engine, Render, Runner } = Matter;
@@ -17,6 +18,7 @@ export default class Game {
     engine: Matter.Engine = Engine.create();
     render: Matter.Render;
     runner: Matter.Runner;
+    colision: Colision;
 
     static: Static;
     dinamic: Dinamic;
@@ -35,10 +37,10 @@ export default class Game {
         this.layer = layerFactory.getInstance();
         this.stage.add(this.layer);
         this.animation = new Animation(this);
-
+        
         this.static = new Static(this);
         this.dinamic = new Dinamic(this);
-
+        
         this.render = Render.create({
             element: this.stageElement,
             engine: this.engine,
@@ -49,10 +51,11 @@ export default class Game {
             }
         });
         Render.run(this.render);
-
-    // create runner
-    this.runner = Runner.create();
+        
+        // create runner
+        this.runner = Runner.create();
         Runner.run(this.runner, this.engine);
+        this.colision = new Colision(this);
 
         this.init();
     }
@@ -66,6 +69,9 @@ export default class Game {
     }
 
     setupEvents = () => {
+        // colision events
+
+        // mouse events
         // window.addEventListener('resize', this.onWindowResize);
         this.stageElement.onclick = this.onMouseClick;
     }

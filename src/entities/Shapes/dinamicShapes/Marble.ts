@@ -14,7 +14,7 @@ export default class Marble {
         const marble = Bodies.circle(x, y, radius, {
             ...marbleOptions,
             isStatic: isStatic,
-            label: label,
+            label: 'marble',
             render: { fillStyle: _color }
         });
         // Body.setVelocity(marble, { x: vx(), y: 0 });

@@ -23,27 +23,23 @@ export default class Static {
     }
 
     addObjects() {
-        // slope 1
-        // this.addObject(-200, 100, this.width - 100, 10, 2, 'random');
         // this.makeFrame();
         this.makeGround();
-        // this.makePiramid();
-
-        new Piramid(this.game);
-
+        this.makeDestroyers();
+        this.makePiramid();
     }
 
     makeFrame() {
         const angle = 0;
-        const color = 'black';
-        this.addObject(0, 0, 3, this.height, angle, color);
-        this.addObject(0, 0, this.width, 3, angle, color);
-        this.addObject(this.width - 3, 0, 3, this.height, angle, color);
-        this.addObject(0, this.height - 3, this.width, 200, angle, color);
+        const label = 'ground';
+        this.addObject(0, 0, 3, this.height, angle, label);
+        this.addObject(0, 0, this.width, 3, angle, label);
+        this.addObject(this.width - 3, 0, 3, this.height, angle, label);
+        this.addObject(0, this.height - 3, this.width, 200, angle, label);
     }
 
     makeGround() {
-        const x = this.game.width / 2 + 50;
+        const x = this.game.width / 2 + 100;
         const y = 148.5;
         const polygon = Bodies.rectangle(0, 0, this.game.width / 2 - 50, 5, earthOptions);
         const { offsetX, offsetY } = offsetMatterBodyPosition(polygon, x, y);
@@ -52,31 +48,24 @@ export default class Static {
         World.add(this.game.engine.world, polygon);
 
         
-        // const mirrored = copyAndMirrorBody(polygon, this.game.width / 2);
-        // Composite.add(this.game.engine.world, [polygon, mirrored]);
+        const mirrored = copyAndMirrorBody(polygon, this.game.width / 2);
+        Composite.add(this.game.engine.world, [polygon, mirrored]);
     }
 
     makePiramid() {
-        const vertices = [
-            { x: this.game.width / 2 + 75, y: 125 },
-            { x: this.game.width / 2, y: 25 },
-            { x: this.game.width / 2 - 75, y: 125 },
-        ];
-
-        const mPiramid = Bodies.fromVertices(0, 0, [vertices], earthOptions);
-        mPiramid.label = 'piramid';
-        mPiramid.render.fillStyle = 'red';
-
-        World.add(this.game.engine.world, [mPiramid]);
-        this.bodies.push(mPiramid);
+        const p = new Piramid(this.game);
     }
 
-    addObject(x: number, y: number, width: number, height: number, angle: number = 0, color: string = 'black') {
+    makeDestroyers() {
+        const angle = 0;
+        const label = 'destroyer';
+        this.addObject(this.width / 2 + 100, 100, 20, 2, angle, label);
+    }
 
+    addObject(x: number, y: number, width: number, height: number, angle: number = 0, label = 'ground') {
         const { x: mX, y: mY } = topLeftToCenter(x, y, width, height);
-
         const mRect = Bodies.rectangle(mX, mY, width, height, earthOptions);
-        mRect.label = 'ground';
+        mRect.label = label;
         Body.setAngle(mRect, degreesToRadians(angle));
         this.bodies.push(mRect);
         World.add(this.game.engine.world, [mRect]);

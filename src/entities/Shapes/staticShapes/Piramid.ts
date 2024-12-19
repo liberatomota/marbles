@@ -75,16 +75,12 @@ export default class Piramid {
     });
     td2.startOpenTrapDoor(4320);
 
-    const td3 = new TrapDoorSlider(this.game);
-    td3.create(600, 300, 15, 4, 20, {
-      openTime: 1000,
-    });
-    td3.startOpenTrapDoor(5000);
+    
   }
   addPlanks() {
-    const p1W = 50;
+    const p1W = 52;
     const plank1 = Bodies.rectangle(
-      this.x + 27 + p1W / 2,
+      this.x + 25 + p1W / 2,
       this.y - 50,
       p1W,
       2,
