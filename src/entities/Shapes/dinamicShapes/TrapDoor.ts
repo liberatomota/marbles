@@ -7,6 +7,16 @@ import {
 
 const { Bodies, Body, World } = Matter;
 
+export type TrapDoorOptionsType = {
+  maxAngle: number; // in degrees
+  openTime: number; // in ms
+};
+
+const TRAPDOOR_DEFAULT_OPTIONS = {
+  maxAngle: 90,
+  openTime: 0,
+};
+
 export default class TrapDoor {
   game: Game;
   trapDoorBody: Matter.Body | null = null;
@@ -15,23 +25,30 @@ export default class TrapDoor {
   width = 0;
   height = 0;
   angle = 0;
-  handleOptions = {
-    isStatic: false,
-    collisionFilter: {
-      group: -1, // Negative values isolate the part from collisions
-    },
-  };
+  options: TrapDoorOptionsType = TRAPDOOR_DEFAULT_OPTIONS;
   bodyOptions = { friction: 0.1, frictionAir: 0.02, isStatic: true };
   constructor(game: Game) {
     this.game = game;
   }
 
-  create(x: number, y: number, width: number, height: number, angle?: number) {
+  create(
+    x: number,
+    y: number,
+    width: number,
+    height: number,
+    angle?: number,
+    options?: Partial<TrapDoorOptionsType>
+  ) {
     this.x = x;
     this.y = y;
     this.width = width;
     this.height = height;
     this.angle = angle ?? 0;
+
+    this.options = {
+      ...this.options,
+      ...options,
+    };
 
     const trapdoor = Bodies.rectangle(
       this.width / 2,
@@ -61,12 +78,12 @@ export default class TrapDoor {
   }
 
   openTrapDoor() {
-    console.log("open trapdoor", this.trapDoorBody);
-    if (!this.trapDoorBody) return;
-
     const body = this.trapDoorBody;
+    // console.log("open trapdoor", body);
+    if (!body) return;
 
-    const maxIndex = 90;
+    const { maxAngle, openTime } = this.options;
+
     let index = 0;
     let intervalOpen: NodeJS.Timeout | null = null;
     let intervalClose: NodeJS.Timeout | null = null;
@@ -83,10 +100,13 @@ export default class TrapDoor {
     };
 
     const open = () => {
-      if (index >= maxIndex) {
+      if (index >= maxAngle) {
         clearInterval(intervalOpen!);
         intervalOpen = null;
-        intervalClose = setInterval(close, 10);
+        // wait before stat closing it
+        setTimeout(() => {
+          intervalClose = setInterval(close, 10);
+        }, openTime);
         return;
       }
       index++;

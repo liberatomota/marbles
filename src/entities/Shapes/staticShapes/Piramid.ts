@@ -1,7 +1,8 @@
 import Matter, { Composite } from "matter-js";
 import Game from "../../Game";
 import { degreesToRadians } from "../../../utils/trignometry-utils";
-import TrapDoor from "../dinamicShapes/TrapDoor";
+import TrapDoor, { TrapDoorOptionsType } from "../dinamicShapes/TrapDoor";
+import TrapDoorSlider from "../dinamicShapes/TrapDoorSlider";
 
 const { Bodies, Body, World } = Matter;
 
@@ -20,7 +21,6 @@ export default class Piramid {
   }
 
   createPiramid() {
-
     const v1 = [
       { x: 0, y: 60 },
       { x: 20, y: 60 },
@@ -44,8 +44,6 @@ export default class Piramid {
     ];
     const middleL = Bodies.fromVertices(24, 10, [v3], this.bodyOptions);
 
-    
-
     const piramid = Body.create({
       parts: [topL, middleB, middleL],
       friction: 0.1,
@@ -65,17 +63,33 @@ export default class Piramid {
   }
 
   addTrapDoors() {
+    // inside the piramid
     const td1 = new TrapDoor(this.game);
     td1.create(this.x - 3, this.y - 5, 15, 4, -45);
     td1.startOpenTrapDoor(2240);
 
+    // piramid entry
     const td2 = new TrapDoor(this.game);
-    td2.create(this.x + 7, this.y - 47, 15, 4, 50);
-    td2.startOpenTrapDoor(4230);
+    td2.create(this.x + 7, this.y - 47, 15, 4, 50, {
+      openTime: 1000,
+    });
+    td2.startOpenTrapDoor(4320);
+
+    const td3 = new TrapDoorSlider(this.game);
+    td3.create(600, 300, 15, 4, 20, {
+      openTime: 1000,
+    });
+    td3.startOpenTrapDoor(5000);
   }
   addPlanks() {
-    const p1W = 48;
-    const plank1 = Bodies.rectangle(this.x + 22 + p1W / 2, this.y - 35, p1W, 2, this.bodyOptions);
+    const p1W = 50;
+    const plank1 = Bodies.rectangle(
+      this.x + 27 + p1W / 2,
+      this.y - 50,
+      p1W,
+      2,
+      this.bodyOptions
+    );
     Body.rotate(plank1, degreesToRadians(-5));
     World.add(this.game.engine.world, [plank1]);
   }
