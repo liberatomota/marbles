@@ -3,6 +3,7 @@ import Konva from "konva";
 import Game from "./Game";
 import { translatePosition } from "../utils/position-utils";
 import { radiansToDegrees } from "../utils/trignometry-utils";
+import { ElementLabel } from "../types/elements";
 
 const Engine = Matter.Engine;
 const Composite = Matter.Composite;
@@ -27,6 +28,7 @@ export default class Animate {
       return;
     }
 
+
     const bodies = this.game.engine.world.bodies;
     // console.log("bodies", bodies)
 
@@ -35,7 +37,14 @@ export default class Animate {
       if (["ground", "piramid"].includes(body.label)) {
       }
 
-      if (body.label === "marble") {
+      if (body.label === ElementLabel.MARBLE) {
+        // const circle = new Konva.Circle({
+        //   x: body.position.x,
+        //   y: body.position.y,
+        //   radius: body.circleRadius,
+        //   fill: "red",
+        // })
+        // this.game.layer.add(circle);
       }
       if (body.label.includes("elevator")) {
         console.log(body);

@@ -3,10 +3,7 @@ import Stage from "./Konva/Stage";
 import Layer from "./Konva/Layer";
 import Animation from "./Animation";
 import Konva from "konva";
-import Static from "./Shapes/staticShapes/Static";
-import Dinamic from "./Shapes/dinamicShapes/Dinamic";
 import Colision from "./Colision";
-import { options as worldOptions } from "../constants/world";
 import Level from "./Level";
 import { LevelType } from "../constants/game-const";
 import MarbleFactory from "./Shapes/Factories/MarbleFactory";
@@ -27,6 +24,7 @@ export default class Game {
   stage: Konva.Stage;
   layer: Konva.Layer;
   animation: Animation;
+
   engine: Matter.Engine = Engine.create();
   render: Matter.Render;
   runner: Matter.Runner;
@@ -83,7 +81,8 @@ export default class Game {
 
   init = () => {
     this.setupEvents();
-    this.engine.gravity.y = 0.1;
+    this.engine.gravity.y = 0.2;
+    // this.render.canvas.style.position = "absolute";
   };
 
   setupEvents = () => {

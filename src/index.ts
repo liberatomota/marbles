@@ -8,26 +8,12 @@ window.onload = async () => {
   console.log("Window Loaded!");
   const stage = document.getElementById("stage");
   if (stage) {
-    stage.setAttribute(
-          "style",
-          `height: ${window.innerHeight-150}px`
-        );
     game = new Game(
       stage as HTMLDivElement,
       stage.clientWidth,
-      window.innerHeight-150
-      // window.innerHeight-200
-      // window.innerHeight - 200
+      stage.clientHeight
     );
     createLevel(0);
-  }
-
-  const infoBoard = document.getElementById("info-board");
-  if (infoBoard) {
-    infoBoard.setAttribute(
-      "style",
-      `height: ${window.innerHeight-150}px!important`
-    );
   }
 };
 

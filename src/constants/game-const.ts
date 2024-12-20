@@ -13,7 +13,7 @@ export type LevelType = {
 export const LEVELS: LevelType[] = [
   {
     name: LEVEL_NAMES.LEVEL_1,
-    numOfFloors: 3,
+    numOfFloors: 5,
   },
   {
     name: LEVEL_NAMES.LEVEL_2,

@@ -11,10 +11,10 @@ export default class Piramid {
   x: number;
   y: number;
   bodyOptions = { friction: 0.1, frictionAir: 0.02, isStatic: true };
-  constructor(game: Game) {
+  constructor(game: Game, x: number, y: number) {
     this.game = game;
-    this.x = this.game.width / 2;
-    this.y = 125;
+    this.x = x;
+    this.y = y;
     this.createPiramid();
     this.addTrapDoors();
     this.addPlanks();
@@ -57,7 +57,7 @@ export default class Piramid {
       y: this.y,
     });
 
-    Body.scale(piramid, 1.5, 1.5);
+    Body.scale(piramid, 1.3, 1.3);
     World.add(this.game.engine.world, [piramid]);
     // World.addConstraint(this.game.engine.world, constraint);
   }

@@ -60,7 +60,7 @@ export default class Car {
       chamfer: {
         radius: this.height * 0.5,
       },
-      density: 0.002,
+      density: 0.0002,
     });
 
     const body = Body.create({

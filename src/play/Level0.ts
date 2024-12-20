@@ -42,9 +42,9 @@ export default class Level1 {
     );
     this.rectFactory.create(
       0,
-      this.game.height - 3,
+      this.game.height - 10,
       this.game.width,
-      3,
+      10,
       angle,
       label
     );
@@ -53,8 +53,8 @@ export default class Level1 {
   startFloorOne() {
     const floorOne = this.level.floors[0];
     const g = this.game;
-    const maxY = floorOne.maxY;
-    const minY = floorOne.minY;
+    const top = floorOne.maxY;
+    const bottom = floorOne.minY;
     const width = g.width;
     const height = g.height;
 
@@ -62,8 +62,8 @@ export default class Level1 {
 
     const e1 = new Elevator(g);
     e1.create(
-      { x: width / 2 + 105, y: maxY + 45 },
-      { x: width / 2 + 105, y: maxY + 152 },
+      { x: width / 2 + 105, y: top + 45 },
+      { x: width / 2 + 105, y: top + 152 },
       { pathRadius: 25 }
     );
 
@@ -73,7 +73,7 @@ export default class Level1 {
     const tds1W = 15;
     tds1.create(
       width / 2 - tds1W / 2 + 138,
-      maxY + 150,
+      bottom,
       tds1W,
       tds1.height,
       tds1.angle,
@@ -85,24 +85,26 @@ export default class Level1 {
 
     // ------------------------------------------- Destroyers
 
-    const d2 = new DestroyerCircles(g, 400, 400, 20); 
+    const d2 = new DestroyerCircles(g, 400, 400, 20);
     const d1 = new DestroyerRect(g, 400, 400, 20, 20);
 
     // ------------------------------------------- Cars
 
-    const c1 = new Car(g, 200, 140);
+    const c1 = new Car(g, 200, 100);
 
     // ------------------------------------------- Static Objects
 
-    const pi1 = new Piramid(g);
+    const pi1 = new Piramid(g, this.game.width / 2, 110);
 
     const angle = 0;
     const label = ElementLabel.GROUND;
 
+    const g0W = width / 2 - 50;
+    this.rectFactory.create(0, bottom, g0W, 2, 10, label);
     const g1W = width / 2 - 145;
-    this.rectFactory.create(width / 2 + 145, 148, g1W, 5, angle, label);
+    this.rectFactory.create(width / 2 + 145, bottom, g1W, 5, angle, label);
     const g2W = 15;
-    this.rectFactory.create(width / 2 + 102, 148, g2W, 5, angle, label);
+    this.rectFactory.create(width / 2 + 102, bottom, g2W, 5, angle, label);
   }
 
   stop() {
