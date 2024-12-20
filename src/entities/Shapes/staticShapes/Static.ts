@@ -6,6 +6,8 @@ import Color from '../../Color';
 import { degreesToRadians } from '../../../utils/trignometry-utils';
 import { copyAndMirrorBody, copyAndMirrorCompositeAxisX, mirrorBodyAxisX, offsetMatterBodyPosition, topLeftToCenter } from '../../../utils/position-utils';
 import { earth as earthOptions } from '../../../constants/world';
+import { ElementLabel } from '../../../types/elements';
+import DestroyerRect from './DestroyerRect';
 
 const { Body, Bodies, Composite, World } = Matter;
 
@@ -31,7 +33,7 @@ export default class Static {
 
     makeFrame() {
         const angle = 0;
-        const label = 'ground';
+        const label = ElementLabel.GROUND;
         this.addObject(0, 0, 3, this.height, angle, label);
         this.addObject(0, 0, this.width, 3, angle, label);
         this.addObject(this.width - 3, 0, 3, this.height, angle, label);
@@ -41,14 +43,16 @@ export default class Static {
     makeGround() {
         const x = this.game.width / 2 + 100;
         const y = 148.5;
-        const polygon = Bodies.rectangle(0, 0, this.game.width / 2 - 50, 5, earthOptions);
+        const polygon = Bodies.rectangle(0, 0, this.game.width / 2 - 50, 5, { isStatic: true, label: ElementLabel.GROUND });
         const { offsetX, offsetY } = offsetMatterBodyPosition(polygon, x, y);
         Body.setPosition(polygon, {x: offsetX, y: offsetY });
-        polygon.label = 'ground';
+        
+        polygon.label = ElementLabel.GROUND;
         World.add(this.game.engine.world, polygon);
 
         
         const mirrored = copyAndMirrorBody(polygon, this.game.width / 2);
+        Body.rotate(mirrored, degreesToRadians(10));
         Composite.add(this.game.engine.world, [polygon, mirrored]);
     }
 
@@ -57,9 +61,7 @@ export default class Static {
     }
 
     makeDestroyers() {
-        const angle = 0;
-        const label = 'destroyer';
-        this.addObject(this.width / 2 + 100, 100, 20, 2, angle, label);
+        const d1 = new DestroyerRect(this.game, 550, 250, 30, 4);
     }
 
     addObject(x: number, y: number, width: number, height: number, angle: number = 0, label = 'ground') {

@@ -36,8 +36,8 @@ const ELEVATOR_DEFAULT_OPTIONS: elevatorOptionsType = {
   angleOffset: 0.02,
   bucketShouldRotate: true,
   bucketShouldBounce: true,
-  bucketReleaseAcelaration: 0.1,
-  bucketMaxAngle: degreesToRadians(68),
+  bucketReleaseAcelaration: 0.2,
+  bucketMaxAngle: degreesToRadians(100),
   bucketBaseHeight: 2,
   pathRadius: 15,
   numElevators: 3,
@@ -110,22 +110,22 @@ export default class Elevator {
         x,
         y,
         12,
-        bucketBaseHeight * 2.5,
+        bucketBaseHeight,
         bodyOption
       );
       bucketsBase.label = `bucket-base-${i}`;
       const bucketsLeft = Bodies.rectangle(
         x - 5,
-        y - 4,
-        5,
+        y - 2,
+        3,
         bucketBaseHeight,
         bodyOption
       );
       Body.setAngle(bucketsLeft, degreesToRadians(90));
       const bucketsRight = Bodies.rectangle(
         x + 5,
-        y - 4,
-        5,
+        y - 2,
+        3,
         bucketBaseHeight,
         bodyOption
       );

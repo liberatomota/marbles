@@ -4,6 +4,7 @@ import {
   degreesToRadians,
   radiansToDegrees,
 } from "../../../utils/trignometry-utils";
+import { ElementLabel } from "../../../types/elements";
 
 const { Bodies, Body, World } = Matter;
 
@@ -69,7 +70,7 @@ export default class TrapDoorSlider {
     this.trapDoorSliderBody = Body.create({
       parts: [...this.trapdoors],
       ...this.bodyOptions,
-      label: "trapdoor",
+      label: ElementLabel.TRAPDOOR_SLIDER,
     });
     Body.setPosition(this.trapDoorSliderBody, {
       x: this.x,
@@ -148,7 +149,7 @@ export default class TrapDoorSlider {
       x: Math.cos(angleInRadians),
       y: Math.sin(angleInRadians),
     };
-    console.log("unitVector", unitVector);
+    // console.log("unitVector", unitVector);
     const displacement = {
       x: unitVector.x * slideDistance,
       y: unitVector.y * slideDistance,

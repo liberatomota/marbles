@@ -4,6 +4,7 @@ import {
   degreesToRadians,
   radiansToDegrees,
 } from "../../../utils/trignometry-utils";
+import { ElementLabel } from "../../../types/elements";
 
 const { Bodies, Body, World } = Matter;
 
@@ -62,7 +63,7 @@ export default class TrapDoor {
     this.trapDoorBody = Body.create({
       parts: [lever, pivot, trapdoor],
       ...this.bodyOptions,
-      label: "trapdoor",
+      label: ElementLabel.TRAPDOOR,
     });
     Body.setPosition(this.trapDoorBody, {
       x: this.x,

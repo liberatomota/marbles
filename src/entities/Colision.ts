@@ -1,7 +1,9 @@
 import Matter from "matter-js";
 import Game from "./Game";
+import { ElementLabel } from "../types/elements";
 
 const { Events, World, Body } = Matter;
+const { DESTROYER, MARBLE } = ElementLabel;
 
 export default class Colision {
   game: Game;
@@ -20,14 +22,12 @@ export default class Colision {
 
     pairs.forEach((pair: any) => {
       const { bodyA, bodyB } = pair;
-        console.log(bodyA.label, bodyB.label);
-      // Check if either body has the 'target' label and the other is 'X'
+    //   console.log(bodyA.label, bodyB.label);
       if (
-        (bodyA.label === "destroyer" && bodyB.label === "marble") ||
-        (bodyA.label === "marble" && bodyB.label === "destroyer")
+        (bodyA.label === DESTROYER && bodyB.label === MARBLE) ||
+        (bodyA.label === MARBLE && bodyB.label === DESTROYER)
       ) {
-        // Remove the element with label 'X'
-        const bodyToRemove = bodyA.label === "marble" ? bodyA : bodyB;
+        const bodyToRemove = bodyA.label === MARBLE ? bodyA : bodyB;
 
         Matter.World.remove(this.game.engine.world, bodyToRemove);
         console.log("Removed:", bodyToRemove.label);
