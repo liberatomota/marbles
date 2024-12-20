@@ -10,9 +10,12 @@ body {
 
 }
 
-
-canvas {
+#stage {
+    background-color: transparent;
+}
+    canvas {
     border: 1px solid red;
+    background-color: transparent!important;
     /* position: absolute;
     top: 0;
     left: 0; */

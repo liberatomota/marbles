@@ -14,6 +14,7 @@
   "devDependencies": {
     "@types/express": "^5.0.0",
     "@types/matter-js": "^0.19.8",
+    "@types/p5": "^1.7.6",
     "autoprefixer": "^10.4.20",
     "concurrently": "^9.0.1",
     "copy-webpack-plugin": "^12.0.2",
@@ -34,6 +35,7 @@
     "konva": "^9.3.16",
     "matter-js": "^0.20.0",
     "npm": "^10.9.2",
+    "p5": "^1.11.2",
     "paper": "^0.12.18"
   }
 }

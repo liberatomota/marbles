@@ -3,6 +3,8 @@ export enum ElementLabel {
   EARTH = "earth",
   GROUND = "ground",
   ELEVATOR = "elevator",
+  ELEVATOR_PIVOTS = "elevators",
+  ELEVATOR_BUCKET = "elevatorbucket",
   TRAPDOOR = "trapdoor",
   TRAPDOOR_SLIDER = "trapdoorslider",
   DESTROYER = "destroyer",

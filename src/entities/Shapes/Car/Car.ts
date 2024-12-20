@@ -18,7 +18,7 @@ const CAR_OPTIONS_DEFAULT = {
   wheelAOffset: -20 * 0.5 + 20,
   wheelBOffset: 20 * 0.5 - 20,
   wheelYOffset: 0,
-  wheelSize: 5 * scale,
+  wheelSize: 6 * scale,
 };
 
 export default class Car {
@@ -26,8 +26,8 @@ export default class Car {
   car: Matter.Composite;
   x: number;
   y: number;
-  width: number = 25 * scale;
-  height: number = 3 * scale;
+  width: number = 30 * scale;
+  height: number = 4 * scale;
   options: CarOptionsType = CAR_OPTIONS_DEFAULT;
   constructor(game: Game, x: number, y: number) {
     this.game = game;
@@ -61,6 +61,7 @@ export default class Car {
         radius: this.height * 0.5,
       },
       density: 0.0002,
+      render: { fillStyle: "blue" },
     });
 
     const body = Body.create({
@@ -73,6 +74,7 @@ export default class Car {
       },
       friction: 0.8,
       density: 0.0001,
+      render: { fillStyle: "blue" },
     });
 
     // Add the compound body to the composite
@@ -87,6 +89,7 @@ export default class Car {
           group: group,
         },
         friction: 0.8,
+        render: { fillStyle: "blue", strokeStyle: "blue", lineWidth: 1 },
       }
     );
 
@@ -99,6 +102,7 @@ export default class Car {
           group: group,
         },
         friction: 0.8,
+        render: { fillStyle: "blue", strokeStyle: "blue", lineWidth: 1 },
       }
     );
 
@@ -135,10 +139,10 @@ export default class Car {
   }
 
   createBucket(group: number) {
-    const bucketWidth = 12;
+    const bucketWidth = 15;
     const bucketHeight = 5;
     const wallThickness = 2;
-    const bucketYOffset = 3; // Offset above chassis center
+    const bucketYOffset = 2; // Offset above chassis center
 
     const options = {
       friction: 0.1,
@@ -148,6 +152,7 @@ export default class Car {
       collisionFilter: {
         group: group,
       },
+      render: { fillStyle: "blue" },
     };
 
     // Base of the bucket
@@ -155,7 +160,7 @@ export default class Car {
       this.x,
       this.y - bucketYOffset,
       bucketWidth,
-      2,
+      4,
       options
     );
     bucketsBase.label = `bucket-base`;
@@ -163,18 +168,18 @@ export default class Car {
     // Left wall of the bucket
     const bucketsLeft = Bodies.rectangle(
       this.x - bucketWidth / 2,
-      this.y - bucketYOffset - 5 / 2,
-      2,
-      5,
+      this.y - bucketYOffset - 7 / 2,
+      4,
+      7,
       options
     );
 
     // Right wall of the bucket
     const bucketsRight = Bodies.rectangle(
       this.x + bucketWidth / 2,
-      this.y - bucketYOffset - 5 / 2,
-      2,
-      5,
+      this.y - bucketYOffset - 7 / 2,
+      4,
+      7,
       options
     );
 

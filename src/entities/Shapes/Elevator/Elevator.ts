@@ -10,6 +10,7 @@ import {
   offsetMatterBodyPosition,
 } from "../../../utils/position-utils";
 import Konva from "konva";
+import { ElementLabel } from "../../../types/elements";
 
 const { Body, World, Bodies, Composite } = Matter;
 
@@ -37,8 +38,8 @@ const ELEVATOR_DEFAULT_OPTIONS: elevatorOptionsType = {
   bucketShouldRotate: true,
   bucketShouldBounce: false,
   bucketReleaseAcelaration: 0.2,
-  bucketMaxAngle: degreesToRadians(100),
-  bucketBaseHeight: 2,
+  bucketMaxAngle: degreesToRadians(154),
+  bucketBaseHeight: 4,
   pathRadius: 15,
   numElevators: 3,
   bodyOption: { friction: 0.01, frictionAir: 0.02, isStatic: true },
@@ -110,34 +111,32 @@ export default class Elevator {
       const bucketsBase = Bodies.rectangle(
         x,
         y,
-        12,
-        bucketBaseHeight,
+        14,
+        4,
         bodyOption
       );
-      bucketsBase.label = `bucket-base-${i}`;
+      
       const bucketsLeft = Bodies.rectangle(
-        x - 5,
+        x - 7,
         y - 2,
-        3,
-        bucketBaseHeight,
+        4,
+        8,
         bodyOption
       );
-      Body.setAngle(bucketsLeft, degreesToRadians(90));
       const bucketsRight = Bodies.rectangle(
-        x + 5,
+        x + 7,
         y - 2,
-        3,
-        bucketBaseHeight,
+        4,
+        8,
         bodyOption
       );
-      Body.setAngle(bucketsRight, degreesToRadians(90));
 
       const bucket = Body.create({
         parts: [bucketsBase, bucketsLeft, bucketsRight],
         friction: 0.1,
         frictionAir: 0.02,
         isStatic: true,
-        label: `buckets-${i}`,
+        label: ElementLabel.ELEVATOR_BUCKET,
       });
 
       this.buckets.push(bucket);
@@ -207,10 +206,10 @@ export default class Elevator {
 
     if (x < pv1X) {
       if (rotateDirection === RotateToEnum.RIGHT) {
-        newY = y - 1;
+        newY = y - 0.2;
       } else {
         angle = insideRelaseInterval ? -aceleration : aceleration;
-        newY = y + 1;
+        newY = y + 0.2;
         if (Math.floor(y) === Math.floor(this.deployPointMiddle.y)) {
           if (bucketShouldBounce) {
             this.overarchingBucketBase(bucket);
@@ -220,9 +219,9 @@ export default class Elevator {
     } else {
       if (rotateDirection === RotateToEnum.RIGHT) {
         angle = insideRelaseInterval ? aceleration : -aceleration;
-        newY = y + 1;
+        newY = y + 0.2;
       } else {
-        newY = y - 1;
+        newY = y - 0.2;
       }
     }
 

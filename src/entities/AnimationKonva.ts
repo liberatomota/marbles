@@ -10,14 +10,14 @@ const Composite = Matter.Composite;
 
 export default class Animate {
   game: Game;
-  instance: Konva.Animation;
+  // instance: Konva.Animation;
 
   lastRenderTime = 0;
   renderInterval = 30;
   constructor(game: Game) {
     this.game = game;
-    this.instance = new Konva.Animation(this.animate, this.game.layer);
-    this.instance.start();
+    // this.instance = new Konva.Animation(this.animate, this.game.layer);
+    // this.instance.start();
   }
 
   animate = (frame: any) => {
@@ -51,7 +51,7 @@ export default class Animate {
       }
     }
 
-    Engine.update(this.game.engine);
+    // Engine.update(this.game.engine);
   };
 
   checkOffscreen = () => {

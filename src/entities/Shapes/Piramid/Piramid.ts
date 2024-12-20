@@ -34,7 +34,7 @@ export default class Piramid {
       { x: 70, y: 60 },
       { x: 50, y: 37 },
     ];
-    const middleB = Bodies.fromVertices(0, 20, [v2], this.bodyOptions);
+    const middleB = Bodies.fromVertices(0, 18, [v2], this.bodyOptions);
 
     const v3 = [
       { x: 55, y: 30 },
@@ -57,7 +57,7 @@ export default class Piramid {
       y: this.y,
     });
 
-    Body.scale(piramid, 1.3, 1.3);
+    Body.scale(piramid, 2, 2);
     World.add(this.game.engine.world, [piramid]);
     // World.addConstraint(this.game.engine.world, constraint);
   }
@@ -65,12 +65,12 @@ export default class Piramid {
   addTrapDoors() {
     // inside the piramid
     const td1 = new TrapDoor(this.game);
-    td1.create(this.x - 3, this.y - 5, 15, 4, -45);
+    td1.create(this.x -3, this.y  - 10, 15, 4, -48);
     td1.startOpenTrapDoor(2240);
 
     // piramid entry
     const td2 = new TrapDoor(this.game);
-    td2.create(this.x + 7, this.y - 47, 15, 4, 50, {
+    td2.create(this.x + 10, this.y - 61, 20, 4, 50, {
       openTime: 1000,
     });
     td2.startOpenTrapDoor(4320);

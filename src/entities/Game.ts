@@ -1,7 +1,7 @@
 import Matter, { World } from "matter-js";
 import Stage from "./Konva/Stage";
 import Layer from "./Konva/Layer";
-import Animation from "./Animation";
+import Animation from "./AnimationP5";
 import Konva from "konva";
 import Colision from "./Colision";
 import Level from "./Level";
@@ -21,9 +21,13 @@ export default class Game {
   width: number;
   height: number;
 
-  stage: Konva.Stage;
-  layer: Konva.Layer;
-  animation: Animation;
+  // konva
+  // stage: Konva.Stage;
+  // layer: Konva.Layer;
+  // animation: Animation;
+  
+  // p5
+  // animation: Animation
 
   engine: Matter.Engine = Engine.create();
   render: Matter.Render;
@@ -45,13 +49,18 @@ export default class Game {
     this.numOfLevels = numOfLevels;
 
   
-    // Graphic library
+    /*
+    // Graphic library Konva
     const stageFactory = new Stage(this, this.stageElement);
     this.stage = stageFactory.getInstance();
     const layerFactory = new Layer("main");
     this.layer = layerFactory.getInstance();
     this.stage.add(this.layer);
     this.animation = new Animation(this);
+    */
+
+    // Graphic library P5
+    // this.animation = new Animation(this, this.stageElement);
 
     // Physics library
     this.render = Render.create({
@@ -61,6 +70,8 @@ export default class Game {
         width: this.width,
         height: this.height,
         showVelocity: true,
+        wireframes: false,
+        // wireframeBackground: "#ffffff",
       },
     });
     Render.run(this.render);
@@ -81,7 +92,7 @@ export default class Game {
 
   init = () => {
     this.setupEvents();
-    this.engine.gravity.y = 0.2;
+    this.engine.gravity.y = 0.4;
     // this.render.canvas.style.position = "absolute";
   };
 
@@ -99,7 +110,7 @@ export default class Game {
 
   onMouseClick = (event: MouseEvent) => {
     console.log("event", event);
-    const radius = 3;
+    const radius = 5;
     const x = event.offsetX;
     const y = event.offsetY;
     this.marbleFactory.create(x, y, radius);
