@@ -1,13 +1,13 @@
 import Matter, { World } from "matter-js";
 import Konva from "konva";
 import Game from "../../Game";
-import Marble from "./Marble";
-import Elevator from "./Elevator";
+import Marble from "../Factories/MarbleFactory";
+import Elevator from "../Elevator/Elevator";
 import { translatePosition } from "../../../utils/position-utils";
-import TrapDoorSlider from "./TrapDoorSlider";
-import DestroyerRect from "../staticShapes/DestroyerRect";
-import DestroyerCircles from "./DestroyerCircles";
-import Car from "./Car";
+import TrapDoorSlider from "../TrapDoor/TrapDoorSlider";
+import DestroyerRect from "../Destroyer/DestroyerRect";
+import DestroyerCircles from "../Destroyer/DestroyerCircles";
+import Car from "../Car/Car";
 
 const { Composite } = Matter;
 
@@ -17,10 +17,6 @@ export default class Dinamic {
   elements: Map<number, Konva.Node> = new Map();
   constructor(game: Game) {
     this.game = game;
-  }
-
-  addMarble(x: number, y: number, radius: number) {
-    const mMarble = new Marble(this.game, x, y, radius, "random");
   }
 
   addObjects() {

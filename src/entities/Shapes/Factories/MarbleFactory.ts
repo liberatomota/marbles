@@ -5,28 +5,24 @@ import Color from "../../Color";
 import { ElementLabel } from "../../../types/elements";
 import Game from "../../Game";
 
-export default class Marble {
+export default class MarbleFactory {
   game: Game;
-  x: number;
-  y: number;
-  radius: number;
-  color: string;
-  marble: Matter.Body;
-  constructor(game: Game, x: number, y: number, radius: number, color: string) {
+  constructor(game: Game) {
     this.game = game;
-    this.x = x;
-    this.y = y;
-    this.radius = radius;
-    this.color = new Color(color, 1).rgb;
+  }
 
-    this.marble = Bodies.circle(this.x, this.y, this.radius, {
+  create(x: number, y: number, radius: number, color: string = "random") {
+    const _color = new Color(color, 1).rgb;
+
+    const marble = Bodies.circle(x, y, radius, {
       ...marbleOptions,
       isStatic: false,
       label: ElementLabel.MARBLE,
-      render: { fillStyle: this.color },
+      render: { fillStyle: _color },
     });
     // Body.setVelocity(marble, { x: vx(), y: 0 });
     // Body.setAngularVelocity(marble, randomPosNeg() / 8);
-    World.add(this.game.engine.world, this.marble);
+    World.add(this.game.engine.world, marble);
+    return marble;
   }
 }

@@ -1,7 +1,7 @@
 import Game from "../entities/Game";
 import Level from "../entities/Level";
-import TrapDoor from "../entities/Shapes/dinamicShapes/TrapDoor";
-import TrapDoorSlider from "../entities/Shapes/dinamicShapes/TrapDoorSlider";
+import TrapDoor from "../entities/Shapes/TrapDoor/TrapDoor";
+import TrapDoorSlider from "../entities/Shapes/TrapDoor/TrapDoorSlider";
 
 export default class Level1 {
   game: Game;

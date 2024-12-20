@@ -1,8 +1,8 @@
 import Matter, { Composite } from "matter-js";
 import Game from "../../Game";
 import { degreesToRadians } from "../../../utils/trignometry-utils";
-import TrapDoor, { TrapDoorOptionsType } from "../dinamicShapes/TrapDoor";
-import TrapDoorSlider from "../dinamicShapes/TrapDoorSlider";
+import TrapDoor, { TrapDoorOptionsType } from "../TrapDoor/TrapDoor";
+import TrapDoorSlider from "../TrapDoor/TrapDoorSlider";
 
 const { Bodies, Body, World } = Matter;
 

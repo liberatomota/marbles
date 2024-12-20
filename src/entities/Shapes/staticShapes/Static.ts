@@ -1,13 +1,13 @@
 import Matter from 'matter-js';
 import Konva from 'konva';
 import Game from "../../Game";
-import Piramid from './Piramid';
+import Piramid from '../Piramid/Piramid';
 import Color from '../../Color';
 import { degreesToRadians } from '../../../utils/trignometry-utils';
 import { copyAndMirrorBody, copyAndMirrorCompositeAxisX, mirrorBodyAxisX, offsetMatterBodyPosition, topLeftToCenter } from '../../../utils/position-utils';
 import { earth as earthOptions } from '../../../constants/world';
 import { ElementLabel } from '../../../types/elements';
-import DestroyerRect from './DestroyerRect';
+import DestroyerRect from '../Destroyer/DestroyerRect';
 
 const { Body, Bodies, Composite, World } = Matter;
 

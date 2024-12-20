@@ -9,6 +9,7 @@ import Colision from "./Colision";
 import { options as worldOptions } from "../constants/world";
 import Level from "./Level";
 import { LevelType } from "../constants/game-const";
+import MarbleFactory from "./Shapes/Factories/MarbleFactory";
 
 const { Engine, Render, Runner, Composite } = Matter;
 
@@ -30,6 +31,8 @@ export default class Game {
   render: Matter.Render;
   runner: Matter.Runner;
   colision: Colision;
+
+  marbleFactory: MarbleFactory;
 
   timers: NodeJS.Timeout[] = [];
   constructor(
@@ -72,6 +75,9 @@ export default class Game {
     Runner.run(this.runner, this.engine);
     this.colision = new Colision(this);
 
+    // Factories
+    this.marbleFactory = new MarbleFactory(this);
+
     this.init();
 
     // @ts-ignore
@@ -100,7 +106,7 @@ export default class Game {
     const radius = 3;
     const x = event.offsetX;
     const y = event.offsetY;
-    // this.dinamic.addMarble(x, y, radius);
+    this.marbleFactory.create(x, y, radius);
   };
 
   createLevel = (levelNumber: number, levelData: LevelType) => {

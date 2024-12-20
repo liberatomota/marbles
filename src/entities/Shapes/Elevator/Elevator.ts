@@ -79,7 +79,8 @@ export default class Elevator {
     );
 
     this.createBuckets(pivot1, pivot2);
-    setInterval(this.moveBuckets, 1000 / 60);
+    const interval = setInterval(this.moveBuckets, 1000 / 60);
+    this.game.registerTimer(interval);
   }
   createPivots(p1: PointType, p2: PointType) {
     const pivot1 = Bodies.circle(p1.x, p1.y, 3, { isStatic: true });
@@ -269,8 +270,8 @@ export default class Elevator {
 
     const retract = () => {
       if (index <= 0) {
-        clearInterval(intervalDown!); // Clear interval when fully retracted
-        intervalDown = null; // Ensure intervalDown is reset
+        this.game.clearTimer(intervalDown!);
+        intervalDown = null;
         return;
       }
       index--;
@@ -282,9 +283,10 @@ export default class Elevator {
 
     const expand = () => {
       if (index >= maxIndex) {
-        clearInterval(intervalUp!); // Stop upward movement
-        intervalUp = null; // Ensure intervalUp is reset
-        intervalDown = setInterval(retract, 20); // Start retracting
+        clearInterval(intervalUp!);
+        intervalUp = null;
+        intervalDown = setInterval(retract, 20);
+        this.game.registerTimer(intervalDown);
         return;
       }
       index++;
@@ -296,5 +298,6 @@ export default class Elevator {
 
     // Start expanding
     intervalUp = setInterval(expand, 20);
+    this.game.registerTimer(intervalUp);
   }
 }

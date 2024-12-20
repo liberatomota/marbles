@@ -45,7 +45,8 @@ export default class Elevator {
     };
 
     this.create();
-    setInterval(this.rotateCircles, 1000 / 10);
+    const interval = setInterval(this.rotateCircles, 1000 / 10);
+    this.game.registerTimer(interval);
   }
 
   create() {
