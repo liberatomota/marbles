@@ -22,8 +22,8 @@ export default class TrapDoorSlider {
   trapdoors: Matter.Body[] = [];
   x = 0;
   y = 0;
-  width = 0;
-  height = 0;
+  width = 10;
+  height = 4;
   angle = 0;
   options: TrapDoorOptionsType = TRAPDOOR_DEFAULT_OPTIONS;
   bodyOptions = { friction: 0.1, frictionAir: 0.02, isStatic: true };
@@ -65,7 +65,7 @@ export default class TrapDoorSlider {
       this.bodyOptions
     );
     this.trapdoors = [trapdoor1, trapdoor2];
-    const pivot = Bodies.circle(0, 0, 2, this.bodyOptions);
+    // const pivot = Bodies.circle(0, 0, 2, this.bodyOptions);
     // const lever = Bodies.circle(-this.width / 2, 0, 1, this.bodyOptions);
     this.trapDoorSliderBody = Body.create({
       parts: [...this.trapdoors],
@@ -79,15 +79,17 @@ export default class TrapDoorSlider {
     Matter.Body.setAngle(this.trapDoorSliderBody, degreesToRadians(this.angle));
 
     World.add(this.game.engine.world, [this.trapDoorSliderBody]);
+    // console.log("added to the world")
   }
 
-  startOpenTrapDoor(interval: number) {
-    setInterval(() => this.openTrapDoor(), interval);
+  startOpenTrapDoor(intervalT: number) {
+    const interval = setInterval(() => this.openTrapDoor(), intervalT);
+    this.game.registerTimer(interval);
   }
 
   openTrapDoor() {
     const body = this.trapDoorSliderBody;
-    // console.log("open trapdoor", body);
+    // console.log("open trapdoor (slider)", body);
     if (!body) return;
 
     const { openTime } = this.options;
@@ -115,12 +117,14 @@ export default class TrapDoorSlider {
 
     const open = () => {
       if (index >= this.width / 2) {
-        clearInterval(intervalOpen!);
-        intervalOpen = null;
+        this.game.clearTimer(intervalOpen!);
         // wait before stat closing it
-        setTimeout(() => {
+        const timeout = setTimeout(() => {
           intervalClose = setInterval(close, 30);
+          this.game.registerTimer(intervalClose);
+          this.game.clearTimer(timeout!);
         }, openTime);
+        this.game.registerTimer(timeout);
         return;
       }
       index++;
@@ -137,6 +141,7 @@ export default class TrapDoorSlider {
 
     // Start expanding
     intervalOpen = setInterval(open, 30);
+    this.game.registerTimer(intervalOpen);
   }
 
   getTranslationValues(slideDistance: number): {

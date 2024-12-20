@@ -26,26 +26,30 @@ export default class Dinamic {
   addObjects() {
     this.addElevators();
     this.addDestroyers();
+    this.addTrapDoors();
     this.addCars();
   }
 
   addElevators() {
     const e1 = new Elevator(this.game);
     e1.create(
-      { x: this.game.width / 2 + 100, y: 45 },
-      { x: this.game.width / 2 + 100, y: 150 },
-      { bucketShouldBounce: false }
+      { x: this.game.width / 2 + 105, y: 45 },
+      { x: this.game.width / 2 + 105, y: 152 },
+      { pathRadius: 25 }
     );
 
     const e2 = new Elevator(this.game);
     e2.create(
       { x: this.game.width - 100, y: 45 },
-      { x: this.game.width - 100, y: 150 },
-      { bucketShouldBounce: false }
+      { x: this.game.width - 100, y: 152 }
     );
 
+    
+  }
+
+  addTrapDoors() {
     const td3 = new TrapDoorSlider(this.game);
-    td3.create(this.game.width / 2 + 82, 150, 20, 4, 5, {
+    td3.create(this.game.width / 2 + 130, 151, 17, 5, 0, {
       openTime: 1000,
     });
     td3.startOpenTrapDoor(5000);

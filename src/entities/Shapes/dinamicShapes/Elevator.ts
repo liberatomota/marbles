@@ -35,7 +35,7 @@ const ELEVATOR_DEFAULT_OPTIONS: elevatorOptionsType = {
   rotateDirection: RotateToEnum.LEFT,
   angleOffset: 0.02,
   bucketShouldRotate: true,
-  bucketShouldBounce: true,
+  bucketShouldBounce: false,
   bucketReleaseAcelaration: 0.2,
   bucketMaxAngle: degreesToRadians(100),
   bucketBaseHeight: 2,

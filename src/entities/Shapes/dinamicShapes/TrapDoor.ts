@@ -24,7 +24,7 @@ export default class TrapDoor {
   x = 0;
   y = 0;
   width = 0;
-  height = 0;
+  height = 4;
   angle = 0;
   options: TrapDoorOptionsType = TRAPDOOR_DEFAULT_OPTIONS;
   bodyOptions = { friction: 0.1, frictionAir: 0.02, isStatic: true };
@@ -74,8 +74,9 @@ export default class TrapDoor {
     World.add(this.game.engine.world, [this.trapDoorBody]);
   }
 
-  startOpenTrapDoor(interval: number) {
-    setInterval(() => this.openTrapDoor(), interval);
+  startOpenTrapDoor(intervalNumber: number) {
+    const interval = setInterval(() => this.openTrapDoor(), intervalNumber);
+    this.game.registerTimer(interval);
   }
 
   openTrapDoor() {
@@ -88,10 +89,11 @@ export default class TrapDoor {
     let index = 0;
     let intervalOpen: NodeJS.Timeout | null = null;
     let intervalClose: NodeJS.Timeout | null = null;
+    let timeout: NodeJS.Timeout | null = null;
 
     const close = () => {
       if (index <= 0) {
-        clearInterval(intervalClose!);
+        this.game.clearTimer(intervalClose!);
         intervalClose = null;
         return;
       }
@@ -102,12 +104,14 @@ export default class TrapDoor {
 
     const open = () => {
       if (index >= maxAngle) {
-        clearInterval(intervalOpen!);
-        intervalOpen = null;
+        this.game.clearTimer(intervalOpen!);
         // wait before stat closing it
-        setTimeout(() => {
+        const timeout = setTimeout(() => {
           intervalClose = setInterval(close, 10);
+          this.game.registerTimer(intervalClose);
+          this.game.clearTimer(timeout!);
         }, openTime);
+        this.game.registerTimer(timeout);
         return;
       }
       index++;
@@ -117,5 +121,6 @@ export default class TrapDoor {
 
     // Start expanding
     intervalOpen = setInterval(open, 10);
+    this.game.registerTimer(intervalOpen);
   }
 }

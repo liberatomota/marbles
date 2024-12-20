@@ -41,19 +41,28 @@ export default class Static {
     }
 
     makeGround() {
-        const x = this.game.width / 2 + 100;
-        const y = 148.5;
-        const polygon = Bodies.rectangle(0, 0, this.game.width / 2 - 50, 5, { isStatic: true, label: ElementLabel.GROUND });
-        const { offsetX, offsetY } = offsetMatterBodyPosition(polygon, x, y);
-        Body.setPosition(polygon, {x: offsetX, y: offsetY });
+        const opt = { isStatic: true, label: ElementLabel.GROUND };
         
-        polygon.label = ElementLabel.GROUND;
-        World.add(this.game.engine.world, polygon);
+        const halfWidth = this.game.width / 2;
+        let xx = halfWidth + 145;
+        const y = 148.5;
+
+        const gl1 = Bodies.rectangle(0, 0, 15, 5, opt);
+        const offsets1 = offsetMatterBodyPosition(gl1, halfWidth + 100, y);
+        Body.setPosition(gl1, {x: offsets1.offsetX, y: offsets1.offsetY });
+
+        const gl2 = Bodies.rectangle(0, 0, halfWidth, 5, opt);
+        const offsets2 = offsetMatterBodyPosition(gl2, xx, y);
+        Body.setPosition(gl2, {x: offsets2.offsetX, y: offsets2.offsetY });
+
+        World.add(this.game.engine.world, [gl1, gl2]);
+        
+
 
         
-        const mirrored = copyAndMirrorBody(polygon, this.game.width / 2);
-        Body.rotate(mirrored, degreesToRadians(10));
-        Composite.add(this.game.engine.world, [polygon, mirrored]);
+        // const mirrored = copyAndMirrorBody(polygon, this.game.width / 2);
+        // Body.rotate(mirrored, degreesToRadians(10));
+        // Composite.add(this.game.engine.world, [polygon, mirrored]);
     }
 
     makePiramid() {
@@ -61,7 +70,10 @@ export default class Static {
     }
 
     makeDestroyers() {
-        const d1 = new DestroyerRect(this.game, 550, 250, 30, 4);
+        const middleW = this.game.width / 2
+        const d1W = 100;
+        const d1Offset = d1W / 2;
+        const d1 = new DestroyerRect(this.game, middleW + 40 + d1Offset, 220, d1W, 4);
     }
 
     addObject(x: number, y: number, width: number, height: number, angle: number = 0, label = 'ground') {

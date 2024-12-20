@@ -1,7 +1,7 @@
 {
-  "name": "hipotenusa",
+  "name": "marbles",
   "version": "0.0.1",
-  "description": "Learn trignometry - hipotenusa",
+  "description": "Atumzinhos - marbles",
   "main": "index.js",
   "type": "module",
   "scripts": {

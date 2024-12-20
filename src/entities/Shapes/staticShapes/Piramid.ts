@@ -78,7 +78,7 @@ export default class Piramid {
     
   }
   addPlanks() {
-    const p1W = 52;
+    const p1W = 47;
     const plank1 = Bodies.rectangle(
       this.x + 25 + p1W / 2,
       this.y - 50,
