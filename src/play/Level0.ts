@@ -9,15 +9,18 @@ import Piramid from "../entities/Shapes/Piramid/Piramid";
 import RectFactory from "../entities/Shapes/Factories/Rect";
 import { ElementLabel } from "../types/elements";
 import Elevator from "../entities/Shapes/Elevator/Elevator";
+import MarbleFactory from "../entities/Shapes/Factories/MarbleFactory";
 
 export default class Level1 {
   game: Game;
   level: Level;
   rectFactory: RectFactory;
+  marbleFactory: MarbleFactory;
   constructor(game: Game, level: Level) {
     this.game = game;
     this.level = level;
     this.rectFactory = new RectFactory(this.game);
+    this.marbleFactory = new MarbleFactory(this.game);
   }
 
   start() {
@@ -58,12 +61,18 @@ export default class Level1 {
     const width = g.width;
     const height = g.height;
 
+    const newX = width - 50;
+    const newY = top + 50;
+    const nextPosition = { x: newX, y: newY };
+
+    const numberOfMarbles = 25;
+
     // ------------------------------------------- Elevators
 
     const e1 = new Elevator(g);
     e1.create(
-      { x: width / 2 + 105, y: top + 45 },
-      { x: width / 2 + 105, y: top + 152 },
+      { x: width / 2 + 125, y: top + 35 },
+      { x: width / 2 + 125, y: top + 152 },
       { pathRadius: 25 }
     );
 
@@ -72,10 +81,10 @@ export default class Level1 {
     const tds1 = new TrapDoorSlider(g);
     const tds1W = 15;
     tds1.create(
-      width / 2 - tds1W / 2 + 138,
-      bottom,
+      width / 2 - tds1W / 2 + 158,
+      bottom + 2.3,
       tds1W,
-      tds1.height,
+      5,
       tds1.angle,
       {
         openTime: 1000,
@@ -85,8 +94,21 @@ export default class Level1 {
 
     // ------------------------------------------- Destroyers
 
-    const d2 = new DestroyerCircles(g, 400, 400, 20);
-    const d1 = new DestroyerRect(g, 400, 400, 20, 20);
+    const d2Opts = {
+      pathRadius: 40,
+    };
+    const d2Data = { nextPosition };
+
+    // const d2 = new DestroyerCircles(g, 400, 400, d2Opts, d2Data);
+    const d1 = new DestroyerRect(
+      g,
+      width / 2 + 110,
+      bottom + 50,
+      150,
+      5,
+      0,
+      d2Data
+    );
 
     // ------------------------------------------- Cars
 
@@ -94,17 +116,38 @@ export default class Level1 {
 
     // ------------------------------------------- Static Objects
 
-    const pi1 = new Piramid(g, this.game.width / 2, 110);
+    const pi1 = new Piramid(g, this.game.width / 2, 115);
 
     const angle = 0;
     const label = ElementLabel.GROUND;
 
-    const g0W = width / 2 - 50;
-    this.rectFactory.create(0, bottom, g0W, 2, 10, label);
+    const g0W = width / 2 - 100;
+    this.rectFactory.create(0, bottom, g0W, 5, 20, label);
     const g1W = width / 2 - 145;
-    this.rectFactory.create(width / 2 + 145, bottom, g1W, 5, angle, label);
+    this.rectFactory.create(width / 2 + 165, bottom - 14, g1W, 5, -5, label);
     const g2W = 15;
-    this.rectFactory.create(width / 2 + 102, bottom, g2W, 5, angle, label);
+    this.rectFactory.create(width / 2 + 123, bottom, g2W, 5, angle, label);
+    this.rectFactory.create(
+      width / 2 + 123 - 6,
+      bottom - 5,
+      5,
+      10,
+      angle,
+      label
+    );
+
+    let index = 0;
+    let interval: NodeJS.Timeout | null = null;
+
+    interval = setInterval(() => {
+      if (index <= numberOfMarbles) {
+        this.marbleFactory.create(nextPosition.x, nextPosition.y, 5);
+        index++;
+      } else {
+        this.game.clearTimer(interval!);
+      }
+    }, 500);
+    this.game.registerTimer(interval);
   }
 
   stop() {

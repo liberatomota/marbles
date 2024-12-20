@@ -5,6 +5,7 @@ import {
   radiansToDegrees,
 } from "../../../utils/trignometry-utils";
 import { ElementLabel } from "../../../types/elements";
+import Color from "../../Color";
 
 const { Bodies, Body, World } = Matter;
 
@@ -26,7 +27,7 @@ export default class TrapDoorSlider {
   height = 4;
   angle = 0;
   options: TrapDoorOptionsType = TRAPDOOR_DEFAULT_OPTIONS;
-  bodyOptions = { friction: 0.1, frictionAir: 0.02, isStatic: true };
+  bodyOptions = { friction: 0.1, frictionAir: 0.02, isStatic: true, render: { fillStyle: new Color("orange", 1).rgb }  };
   constructor(game: Game) {
     this.game = game;
   }

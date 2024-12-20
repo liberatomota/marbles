@@ -5,6 +5,7 @@ import {
   radiansToDegrees,
 } from "../../../utils/trignometry-utils";
 import { ElementLabel } from "../../../types/elements";
+import Color from "../../Color";
 
 const { Body, World, Bodies, Composite } = Matter;
 
@@ -19,6 +20,7 @@ type DestroyerCirclesOptionsType = {
   pathRadius: number;
   numCircles: number;
   bodyOption: Object;
+  data: Object;
 };
 
 const ELEVATOR_DEFAULT_OPTIONS: DestroyerCirclesOptionsType = {
@@ -26,7 +28,13 @@ const ELEVATOR_DEFAULT_OPTIONS: DestroyerCirclesOptionsType = {
   angleOffset: 1,
   pathRadius: 15,
   numCircles: 3,
-  bodyOption: { friction: 0.01, frictionAir: 0.02, isStatic: true },
+  bodyOption: {
+    friction: 0.01,
+    frictionAir: 0.02,
+    isStatic: true,
+    render: { fillStyle: new Color("red", 1).rgb },
+  },
+  data: {},
 };
 
 export default class Elevator {
@@ -35,17 +43,18 @@ export default class Elevator {
   x: number = 0;
   y: number = 0;
   options: DestroyerCirclesOptionsType = ELEVATOR_DEFAULT_OPTIONS;
-  constructor(game: Game, x: number, y: number, options?: any) {
+  constructor(game: Game, x: number, y: number, options?: any, data?: any) {
     this.game = game;
     this.x = x;
     this.y = y;
     this.options = {
       ...this.options,
-      ...this.options,
+      ...options,
+      data: data ?? {},
     };
 
     this.create();
-    const interval = setInterval(this.rotateCircles, 1000 / 10);
+    const interval = setInterval(this.rotateCircles, 1000 / 100);
     this.game.registerTimer(interval);
   }
 
@@ -66,7 +75,10 @@ export default class Elevator {
       const circle = Matter.Bodies.circle(x, y, 3, {
         label: ElementLabel.DESTROYER,
         isStatic: true,
+        ...this.options.bodyOption,
       });
+
+      circle.plugin = this.options.data;
 
       circles.push(circle);
     }

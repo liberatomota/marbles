@@ -78,15 +78,15 @@ export default class Piramid {
     
   }
   addPlanks() {
-    const p1W = 47;
+    const p1W = 53;
     const plank1 = Bodies.rectangle(
-      this.x + 25 + p1W / 2,
-      this.y - 50,
+      this.x + p1W / 2 + 35,
+      this.y - 55,
       p1W,
       2,
       this.bodyOptions
     );
-    Body.rotate(plank1, degreesToRadians(-5));
+    Body.rotate(plank1, degreesToRadians(-7));
     World.add(this.game.engine.world, [plank1]);
   }
 }

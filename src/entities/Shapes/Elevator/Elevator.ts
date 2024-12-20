@@ -11,6 +11,7 @@ import {
 } from "../../../utils/position-utils";
 import Konva from "konva";
 import { ElementLabel } from "../../../types/elements";
+import Color from "../../Color";
 
 const { Body, World, Bodies, Composite } = Matter;
 
@@ -22,6 +23,7 @@ enum RotateToEnum {
 type elevatorOptionsType = {
   rotateDirection: RotateToEnum;
   angleOffset: number;
+  upDownSpeed: number;
   bucketShouldRotate: boolean;
   bucketShouldBounce: boolean;
   bucketReleaseAcelaration: number;
@@ -35,14 +37,20 @@ type elevatorOptionsType = {
 const ELEVATOR_DEFAULT_OPTIONS: elevatorOptionsType = {
   rotateDirection: RotateToEnum.LEFT,
   angleOffset: 0.02,
+  upDownSpeed: 1,
   bucketShouldRotate: true,
   bucketShouldBounce: false,
   bucketReleaseAcelaration: 0.2,
-  bucketMaxAngle: degreesToRadians(154),
+  bucketMaxAngle: degreesToRadians(100),
   bucketBaseHeight: 4,
-  pathRadius: 15,
+  pathRadius: 13,
   numElevators: 3,
-  bodyOption: { friction: 0.01, frictionAir: 0.02, isStatic: true },
+  bodyOption: {
+    friction: 0.01,
+    frictionAir: 0.02,
+    isStatic: true,
+    render: { fillStyle: new Color("saddlebrown", 1).rgb },
+  },
 };
 
 export default class Elevator {
@@ -92,6 +100,7 @@ export default class Elevator {
 
   createBuckets(pivot1: Matter.Body, pivot2: Matter.Body) {
     const {
+      rotateDirection,
       bucketBaseHeight,
       bodyOption,
       angleOffset,
@@ -103,28 +112,19 @@ export default class Elevator {
       const factor = 1 / (i + 1) - 0.1;
       const x = pivot1.position.x + pathRadius;
       const y = linearInterpolation(this.p1, this.p2, factor).y;
+      let offset = rotateDirection === RotateToEnum.LEFT ? 2 : -2;
+      offset = 0;
 
-      // console.log(this.p1, this.p2)
-      //   console.log("factor", factor);
-      //   console.log("y", y);
-
-      const bucketsBase = Bodies.rectangle(
-        x,
-        y,
-        14,
-        4,
-        bodyOption
-      );
-      
+      const bucketsBase = Bodies.rectangle(x, y, 16, 4, bodyOption);
       const bucketsLeft = Bodies.rectangle(
-        x - 7,
+        x - 8 + offset,
         y - 2,
         4,
         8,
         bodyOption
       );
       const bucketsRight = Bodies.rectangle(
-        x + 7,
+        x + 8 + offset,
         y - 2,
         4,
         8,
@@ -194,6 +194,7 @@ export default class Elevator {
       bucketShouldRotate,
       bucketShouldBounce,
       bucketReleaseAcelaration: aceleration,
+      upDownSpeed,
     } = this.options;
 
     const insideRelaseInterval = y < this.deployPoint.y;
@@ -206,10 +207,10 @@ export default class Elevator {
 
     if (x < pv1X) {
       if (rotateDirection === RotateToEnum.RIGHT) {
-        newY = y - 0.2;
+        newY = y - upDownSpeed;
       } else {
         angle = insideRelaseInterval ? -aceleration : aceleration;
-        newY = y + 0.2;
+        newY = y + upDownSpeed;
         if (Math.floor(y) === Math.floor(this.deployPointMiddle.y)) {
           if (bucketShouldBounce) {
             this.overarchingBucketBase(bucket);
@@ -219,9 +220,9 @@ export default class Elevator {
     } else {
       if (rotateDirection === RotateToEnum.RIGHT) {
         angle = insideRelaseInterval ? aceleration : -aceleration;
-        newY = y + 0.2;
+        newY = y + upDownSpeed;
       } else {
-        newY = y - 0.2;
+        newY = y - upDownSpeed;
       }
     }
 

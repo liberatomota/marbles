@@ -22,15 +22,25 @@ export default class Colision {
 
     pairs.forEach((pair: any) => {
       const { bodyA, bodyB } = pair;
-    //   console.log(bodyA.label, bodyB.label);
+      //   console.log(bodyA.label, bodyB.label);
       if (
         (bodyA.label === DESTROYER && bodyB.label === MARBLE) ||
         (bodyA.label === MARBLE && bodyB.label === DESTROYER)
       ) {
-        const bodyToRemove = bodyA.label === MARBLE ? bodyA : bodyB;
+        const marble = bodyA.label === MARBLE ? bodyA : bodyB;
+        const destroyer = bodyA.label === DESTROYER ? bodyA : bodyB;
 
-        Matter.World.remove(this.game.engine.world, bodyToRemove);
-        console.log("Removed:", bodyToRemove.label);
+        console.log("marble", marble);
+        console.log("destroyer", destroyer);
+
+        if (destroyer.plugin.nextPosition) {
+          const { nextPosition } = destroyer.plugin;
+          console.log("nextPosition", nextPosition);
+          Body.setPosition(marble, nextPosition);
+        } else {
+          Matter.World.remove(this.game.engine.world, marble);
+          console.log("Removed:", marble.label);
+        }
       }
     });
   };
