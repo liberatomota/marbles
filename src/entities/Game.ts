@@ -37,8 +37,8 @@ export default class Game {
   timers: NodeJS.Timeout[] = [];
   constructor(
     stageElement: HTMLDivElement,
-    width: number = 900,
-    height: number = 600,
+    width: number = 0,
+    height: number = 0,
     numOfLevels: number = 3
   ) {
     this.stageElement = stageElement;
@@ -46,10 +46,7 @@ export default class Game {
     this.height = height;
     this.numOfLevels = numOfLevels;
 
-    this.stageElement.setAttribute(
-      "style",
-      `width: ${this.width}px; height: ${this.height}px`
-    );
+  
     // Graphic library
     const stageFactory = new Stage(this, this.stageElement);
     this.stage = stageFactory.getInstance();

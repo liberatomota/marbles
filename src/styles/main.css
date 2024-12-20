@@ -4,7 +4,7 @@
 
 body {
     margin: 0;
-    overflow: scroll;
+    overflow: hidden;
     font-family: Arial, sans-serif;
     /* background-color: #115851; */
 
@@ -13,4 +13,7 @@ body {
 
 canvas {
     border: 1px solid red;
+    position: absolute;
+    top: 0;
+    left: 0;
 }
