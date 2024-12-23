@@ -5,12 +5,26 @@ import Animation from "./AnimationP5";
 import Konva from "konva";
 import Colision from "./Colision";
 import Level from "./Level";
-import { LevelType } from "../constants/game-const";
+import { GAME_RESOLUTION, LevelType } from "../constants/game-const";
 import MarbleFactory from "./Shapes/Factories/MarbleFactory";
+import { marble } from "../constants/world";
+import { ElementLabel } from "../types/elements";
+import RectFactory from "./Shapes/Factories/RectFactory";
 
 const { Engine, Render, Runner, Composite } = Matter;
 
-// numOfFloors: number = 4, floorHeight: number = 150
+type ViewType = {
+  width: number;
+  height: number;
+  left: number;
+  right: number;
+  top: number;
+  bottom: number;
+  viewWidth: number;
+  viewHeight: number;
+  middleX: number;
+  middleY: number;
+}
 
 export default class Game {
   stageElement: HTMLDivElement;
@@ -20,12 +34,14 @@ export default class Game {
 
   width: number;
   height: number;
+  resolution: number[] = GAME_RESOLUTION;
+  view: ViewType;
 
   // konva
   // stage: Konva.Stage;
   // layer: Konva.Layer;
   // animation: Animation;
-  
+
   // p5
   // animation: Animation
 
@@ -35,6 +51,7 @@ export default class Game {
   colision: Colision;
 
   marbleFactory: MarbleFactory;
+  rectFactory: RectFactory;
 
   timers: NodeJS.Timeout[] = [];
   constructor(
@@ -47,8 +64,11 @@ export default class Game {
     this.width = width;
     this.height = height;
     this.numOfLevels = numOfLevels;
+    this.rectFactory = new RectFactory(this);
 
-  
+    this.view = this.calculateFrame();
+    console.log("this.view", this.view)
+
     /*
     // Graphic library Konva
     const stageFactory = new Stage(this, this.stageElement);
@@ -110,11 +130,50 @@ export default class Game {
 
   onMouseClick = (event: MouseEvent) => {
     console.log("event", event);
-    const radius = 5;
+    const radius = marble.radius;
     const x = event.offsetX;
     const y = event.offsetY;
     this.marbleFactory.create(x, y, radius);
   };
+
+  calculateFrame() {
+    
+    const width = this.stageElement.getClientRects()[0].width;
+    const height = this.stageElement.getClientRects()[0].height;
+    const viewWidth = this.resolution[0];
+    const viewHeight = this.resolution[1];
+    const hOffset = viewWidth / 2;
+    const vOffset = viewHeight / 2;
+    
+    const left = width / 2 - hOffset;
+    const right = width / 2 + hOffset;
+    const top = height / 2 - vOffset;
+    const bottom = height / 2 + vOffset;
+
+    return {
+      width,
+      height,
+      left,
+      right,
+      top,
+      bottom,
+      viewWidth,
+      viewHeight,
+      middleX: width / 2,
+      middleY: height / 2
+    }
+  }
+
+  createFrame() {
+    const angle = 0;
+    const label = ElementLabel.GROUND;
+    const frameThickness = 6;
+
+    this.rectFactory.create(this.view.left, this.view.top, this.view.viewWidth, frameThickness, angle, label);
+    this.rectFactory.create(this.view.left, this.view.bottom - frameThickness, this.view.viewWidth, frameThickness, angle, label);
+    this.rectFactory.create(this.view.right - frameThickness, this.view.top, frameThickness, this.view.viewHeight, angle, label);
+    this.rectFactory.create(this.view.left, this.view.top, frameThickness, this.view.viewHeight, angle, label);
+  }
 
   createLevel = (levelNumber: number, levelData: LevelType) => {
     this.reset();
@@ -132,7 +191,7 @@ export default class Game {
     console.log("this.engine.world.bodies", this.engine.world.bodies);
     for (let i = 0; i < this.engine.world.bodies.length; i++) {
       const body = this.engine.world.bodies[i];
-      Composite.remove(this.engine.world, body)
+      Composite.remove(this.engine.world, body);
       i--;
     }
     // Composite.clear(this.engine.world, true);

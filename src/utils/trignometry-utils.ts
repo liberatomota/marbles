@@ -35,3 +35,22 @@ export const getSquarePoints = ([p1, p2]: SegmentType, direction = "up") => {
     ];
 }
 
+export const findOtherLegLength =  (hypotenuse: number, knownLeg: number) => {
+    if (hypotenuse <= knownLeg) {
+        throw new Error("Hypotenuse must be greater than the known leg.");
+    }
+    return Math.sqrt(hypotenuse ** 2 - knownLeg ** 2);
+}
+
+export const calculateTriangle = (horizontalLeg: number, hypotenuseAngle: number) => {
+    const angleInRadians = (Math.PI / 180) * hypotenuseAngle; // Convert degrees to radians
+
+    const verticalLeg = horizontalLeg * Math.tan(angleInRadians); // Vertical leg
+    const hypotenuse = horizontalLeg / Math.cos(angleInRadians); // Hypotenuse
+
+    return {
+        verticalLeg,
+        hypotenuse
+    };
+}
+

@@ -64,6 +64,12 @@ export default class Elevator {
     const circles: Matter.Body[] = [];
     const angleStep = (2 * Math.PI) / this.options.numCircles;
 
+    const pivot = Bodies.circle(0, 0, 3, {
+      isStatic: true,
+      ...this.options.bodyOption,
+      render: { fillStyle: new Color("black", 1).rgb },
+    });
+
     for (let i = 0; i < this.options.numCircles; i++) {
       // Calculate the angle for the current circle
       const angle = i * angleStep;
@@ -84,7 +90,7 @@ export default class Elevator {
     }
 
     this.destroyerCircles = Body.create({
-      parts: circles,
+      parts: [...circles, pivot],
       isStatic: true,
     });
 

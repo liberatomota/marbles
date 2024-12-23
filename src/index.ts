@@ -34,6 +34,6 @@ function createLevel(levelNumber: number = 0) {
     game.createLevel(levelNumber, level);
     game.level!.start();
   } catch (error) {
-    alert(error);
+    console.error(error);
   }
 }

@@ -5,6 +5,7 @@ import {
   radiansToDegrees,
 } from "../../../utils/trignometry-utils";
 import { ElementLabel } from "../../../types/elements";
+import Color from "../../Color";
 
 const { Bodies, Body, World } = Matter;
 
@@ -20,14 +21,14 @@ const TRAPDOOR_DEFAULT_OPTIONS = {
 
 export default class TrapDoor {
   game: Game;
-  trapDoorBody: Matter.Body | null = null;
+  body: Matter.Body | null = null;
   x = 0;
   y = 0;
   width = 0;
   height = 4;
   angle = 0;
   options: TrapDoorOptionsType = TRAPDOOR_DEFAULT_OPTIONS;
-  bodyOptions = { friction: 0.1, frictionAir: 0.02, isStatic: true };
+  bodyOptions = { friction: 0, frictionStatic: 0, isStatic: true, render: { fillStyle: new Color("orange", 1).rgb } };
   constructor(game: Game) {
     this.game = game;
   }
@@ -60,18 +61,18 @@ export default class TrapDoor {
     );
     const pivot = Bodies.circle(0, 0, 2, this.bodyOptions);
     const lever = Bodies.circle(-this.width / 2, 0, 1, this.bodyOptions);
-    this.trapDoorBody = Body.create({
+    this.body = Body.create({
       parts: [lever, pivot, trapdoor],
       ...this.bodyOptions,
       label: ElementLabel.TRAPDOOR,
     });
-    Body.setPosition(this.trapDoorBody, {
+    Body.setPosition(this.body, {
       x: this.x,
       y: this.y,
     });
-    Matter.Body.setAngle(this.trapDoorBody, degreesToRadians(this.angle));
+    Matter.Body.setAngle(this.body, degreesToRadians(this.angle));
 
-    World.add(this.game.engine.world, [this.trapDoorBody]);
+    World.add(this.game.engine.world, [this.body]);
   }
 
   startOpenTrapDoor(intervalNumber: number) {
@@ -80,7 +81,7 @@ export default class TrapDoor {
   }
 
   openTrapDoor() {
-    const body = this.trapDoorBody;
+    const body = this.body;
     // console.log("open trapdoor", body);
     if (!body) return;
 

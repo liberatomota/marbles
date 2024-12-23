@@ -1,98 +1,88 @@
+import { Body } from "matter-js";
+import { ElementLabel } from "../types/elements";
 import Game from "../entities/Game";
 import Level from "../entities/Level";
 import Car from "../entities/Shapes/Car/Car";
-import DestroyerCircles from "../entities/Shapes/Destroyer/DestroyerCircles";
-import TrapDoor from "../entities/Shapes/TrapDoor/TrapDoor";
 import TrapDoorSlider from "../entities/Shapes/TrapDoor/TrapDoorSlider";
+import TrapDoor from "../entities/Shapes/TrapDoor/TrapDoor";
+import MarbleFactory from "../entities/Shapes/Factories/MarbleFactory";
+import DestroyerCircles from "../entities/Shapes/Destroyer/DestroyerCircles";
 import DestroyerRect from "../entities/Shapes/Destroyer/DestroyerRect";
 import Piramid from "../entities/Shapes/Piramid/Piramid";
-import RectFactory from "../entities/Shapes/Factories/Rect";
-import { ElementLabel } from "../types/elements";
-import Elevator from "../entities/Shapes/Elevator/Elevator";
-import MarbleFactory from "../entities/Shapes/Factories/MarbleFactory";
+import RectFactory from "../entities/Shapes/Factories/RectFactory";
+import Elevator, { RotateToEnum } from "../entities/Shapes/Elevator/Elevator";
+import Lift from "../entities/Shapes/Elevator/Lift";
+import { marble } from "../constants/world";
+import { calculateTriangle } from "../utils/trignometry-utils";
+import Ramp from "../entities/Shapes/Composite/Ramp";
 
 export default class Level1 {
   game: Game;
   level: Level;
   rectFactory: RectFactory;
   marbleFactory: MarbleFactory;
+
+  middleView: {
+    x: number;
+    y: number;
+  };
   constructor(game: Game, level: Level) {
     this.game = game;
     this.level = level;
     this.rectFactory = new RectFactory(this.game);
     this.marbleFactory = new MarbleFactory(this.game);
+
+    this.middleView = {
+      x: this.game.width / 2,
+      y: this.game.height / 2,
+    };
   }
 
   start() {
-    this.makeFrame();
+    this.game.createFrame();
     // FLOOR ONE
     this.startFloorOne();
-  }
-
-  makeFrame() {
-    const angle = 0;
-    const label = ElementLabel.GROUND;
-
-    this.rectFactory.create(0, 0, 3, this.game.height, angle, label);
-    this.rectFactory.create(0, 0, this.game.width, 3, angle, label);
-    this.rectFactory.create(
-      this.game.width - 3,
-      0,
-      3,
-      this.game.height,
-      angle,
-      label
-    );
-    this.rectFactory.create(
-      0,
-      this.game.height - 10,
-      this.game.width,
-      10,
-      angle,
-      label
-    );
+    this.startFloorTwo();
   }
 
   startFloorOne() {
     const floorOne = this.level.floors[0];
     const g = this.game;
+
     const top = floorOne.maxY;
     const bottom = floorOne.minY;
-    const width = g.width;
-    const height = g.height;
 
-    const newX = width - 50;
+    const middleX = g.view.middleX;
+    const middleY = bottom - top;
+
+    const width = g.view.viewWidth;
+    const height = g.view.viewHeight;
+
+    const newX = g.view.right - 50;
     const newY = top + 50;
     const nextPosition = { x: newX, y: newY };
 
-    const numberOfMarbles = 25;
+    const numberOfMarbles = 5;
 
-    // ------------------------------------------- Elevators
+    // ------------------------------------------- Elevators 1
 
     const e1 = new Elevator(g);
     e1.create(
-      { x: width / 2 + 125, y: top + 35 },
-      { x: width / 2 + 125, y: top + 152 },
+      { x: middleX + 125, y: top + 55 },
+      { x: middleX + 125, y: bottom + 2 },
       { pathRadius: 25 }
     );
 
-    // ------------------------------------------- TrapDoors
+    // ------------------------------------------- TrapDoors 1
 
     const tds1 = new TrapDoorSlider(g);
     const tds1W = 15;
-    tds1.create(
-      width / 2 - tds1W / 2 + 158,
-      bottom + 2.3,
-      tds1W,
-      5,
-      tds1.angle,
-      {
-        openTime: 1000,
-      }
-    );
+    tds1.create(middleX - tds1W / 2 + 158, bottom + 4, tds1W, 5, tds1.angle, {
+      openTime: 1000,
+    });
     tds1.startOpenTrapDoor(5000);
 
-    // ------------------------------------------- Destroyers
+    // ------------------------------------------- Destroyers 1
 
     const d2Opts = {
       pathRadius: 40,
@@ -102,46 +92,50 @@ export default class Level1 {
     // const d2 = new DestroyerCircles(g, 400, 400, d2Opts, d2Data);
     const d1 = new DestroyerRect(
       g,
-      width / 2 + 110,
-      bottom + 50,
-      150,
+      middleX + 115,
+      bottom + 100,
+      140,
       5,
       0,
       d2Data
     );
 
-    // ------------------------------------------- Cars
+    // ------------------------------------------- Cars 1
 
-    const c1 = new Car(g, 200, 100);
+    // const c1 = new Car(g, 200, 100);
 
-    // ------------------------------------------- Static Objects
+    // ------------------------------------------- Static Objects 1
 
-    const pi1 = new Piramid(g, this.game.width / 2, 115);
+    const pi1 = new Piramid(g, middleX - 5, bottom - 32);
 
-    const angle = 0;
-    const label = ElementLabel.GROUND;
-
-    const g0W = width / 2 - 100;
-    this.rectFactory.create(0, bottom, g0W, 5, 20, label);
-    const g1W = width / 2 - 145;
-    this.rectFactory.create(width / 2 + 165, bottom - 14, g1W, 5, -5, label);
+    // ground left
+    const g0W = middleX - g.view.left - 100;
+    this.rectFactory.create(g.view.left, bottom, g0W, 5);
+    // ground right
+    const g1X = middleX + 165;
+    const rampWidth = g.view.right - g1X;
+    const g1Angle = -5;
+    const { verticalLeg, hypotenuse } = calculateTriangle(rampWidth, g1Angle);
+    this.rectFactory.create(g1X, bottom + verticalLeg / 2, hypotenuse, 5, -5);
+    // small wall between hole and trapdoor
+    const g3X = middleX + 128;
+    this.rectFactory.create(g3X, bottom - 5, 5, 10);
+    // ground between hole and trapdoor
     const g2W = 15;
-    this.rectFactory.create(width / 2 + 123, bottom, g2W, 5, angle, label);
-    this.rectFactory.create(
-      width / 2 + 123 - 6,
-      bottom - 5,
-      5,
-      10,
-      angle,
-      label
-    );
+    this.rectFactory.create(middleX + 123, bottom, g2W, 5);
+
+    this.rectFactory.create(middleX - 20, bottom + 75, 80, 5, 60);
+    this.rectFactory.create(middleX + 180, bottom, 5, 100);
+
+    // ------------------------------------------- Marbles
 
     let index = 0;
     let interval: NodeJS.Timeout | null = null;
+    const radius = marble.radius;
 
     interval = setInterval(() => {
       if (index <= numberOfMarbles) {
-        this.marbleFactory.create(nextPosition.x, nextPosition.y, 5);
+        this.marbleFactory.create(nextPosition.x, nextPosition.y, radius);
         index++;
       } else {
         this.game.clearTimer(interval!);
@@ -150,6 +144,88 @@ export default class Level1 {
     this.game.registerTimer(interval);
   }
 
+  startFloorTwo() {
+    const floorTwo = this.level.floors[1];
+    const g = this.game;
+
+    const top = floorTwo.maxY;
+    const bottom = floorTwo.minY;
+
+    const middleX = g.view.middleX;
+    const middleY = bottom - top;
+
+
+    const newX = middleX - 50;
+    const newY = top + 20;
+    const nextPosition = { x: newX, y: newY };
+    const destroyerData = { nextPosition };
+
+    // ------------------------------------------- Lifts 2
+
+    let liftX = middleX - 140;
+    const numOfLifts = 20;
+    const liftWidth = 30;
+
+    const lOpts = {
+      rideLength: 5,
+      rideSpeed: 30,
+      openTime: 1000,
+    };
+
+    for (let i = 0; i < numOfLifts; i++) {
+      const lift1 = new Lift(g);
+      const x = liftX - i * liftWidth;
+      lift1.create(x, bottom + 10, liftWidth, 30, 110, lOpts);
+      // if even, open trapdoor
+      if (i % 2 === 0) {
+        setTimeout(() => {
+          lift1.startShoot(2000);
+        }, 1000);
+      } else {
+        lift1.startShoot(2000);
+      }
+    }
+    
+    // ------------------------------------------- Elevators 2
+
+    const e1 = new Elevator(g);
+    const e1X = middleX - 90;
+    e1.create(
+      { x: e1X, y: bottom - 120 },
+      { x: e1X, y: bottom + 2 },
+      {
+        pathRadius: 20,
+        rotateDirection: RotateToEnum.RIGHT,
+        numElevators: 4
+      }
+    );
+    // elevator wall
+    this.rectFactory.create(e1X - 7, bottom - 110, 15, 110, 0);
+    
+
+    // ------------------------------------------- Static Objects 2
+
+    const label = ElementLabel.GROUND;
+    // top left ramp
+    const rampAngle = -5;
+    const gThickeness = 5;
+    const rampY = top + 100;
+    const rampWidth = (middleX - g.view.left) - 100;
+    const rampX = middleX - rampWidth;
+
+    const sliders = [{ destroyer: true, destroyerData }, { destroyer: false }]
+    new Ramp(g, rampX, rampY, rampWidth, 3, sliders, rampAngle, gThickeness);
+
+    // left wals
+    const w1 = this.rectFactory.create(g.view.left, rampY + 50, rampX - g.view.left, gThickeness, 20);
+    this.rectFactory.create(w1.bounds.max.x - gThickeness / 2, w1.bounds.max.y, gThickeness, bottom - w1.bounds.max.y);
+
+    // bottom left
+    this.rectFactory.create(g.view.left, bottom, middleX - g.view.left, gThickeness);
+
+    
+
+  }
   stop() {
     this.level.floors = [];
   }

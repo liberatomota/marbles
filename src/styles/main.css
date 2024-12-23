@@ -3,20 +3,19 @@
 @tailwind utilities;
 
 body {
-    margin: 0;
-    overflow: scroll;
-    font-family: Arial, sans-serif;
-    /* background-color: #115851; */
-
+  margin: 0;
+  overflow: hidden;
+  font-family: Arial, sans-serif;
+  /* background-color: #115851; */
 }
 
 #stage {
-    background-color: transparent;
+  background-color: gray;
 }
-    canvas {
-    border: 1px solid red;
-    background-color: transparent!important;
-    /* position: absolute;
+canvas {
+  /* border: 1px solid red; */
+  background-color: transparent !important;
+  /* position: absolute;
     top: 0;
     left: 0; */
 }

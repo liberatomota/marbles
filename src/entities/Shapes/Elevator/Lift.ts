@@ -1,34 +1,41 @@
 import Matter from "matter-js";
 import Game from "../../Game";
-import {
-  degreesToRadians,
-  radiansToDegrees,
-} from "../../../utils/trignometry-utils";
+import { degreesToRadians } from "../../../utils/trignometry-utils";
 import { ElementLabel } from "../../../types/elements";
 import Color from "../../Color";
+import TrapDoor from "../TrapDoor/TrapDoor";
 
 const { Bodies, Body, World } = Matter;
 
-export type TrapDoorOptionsType = {
+export type LiftOptionsType = {
   openTime: number; // in ms
+  rideSpeed: number;
+  rideLength: number;
 };
 
-const TRAPDOOR_DEFAULT_OPTIONS = {
+const LIFT_DEFAULT_OPTIONS = {
   openTime: 0,
+  rideSpeed: 15,
+  rideLength: 5,
 };
 
-export default class TrapDoorSlider {
+export default class Lift {
   game: Game;
   body: Matter.Body | null = null;
-  trapdoors: Matter.Body[] = [];
+  cannon: Matter.Body | null = null;
   x = 0;
   y = 0;
   width = 10;
   height = 4;
   angle = 0;
-  options: TrapDoorOptionsType = TRAPDOOR_DEFAULT_OPTIONS;
-  bodyOptions = { friction: 0.1, frictionAir: 0.02, isStatic: true, render: { fillStyle: new Color("orange", 1).rgb }  };
-  
+  options: LiftOptionsType = LIFT_DEFAULT_OPTIONS;
+  bodyOptions = {
+    riction: 0, // Low sliding friction
+    frictionStatic: 0,
+    isStatic: true,
+    restitution: 1.5,
+    render: { fillStyle: new Color("blue", 1).rgb },
+  };
   constructor(game: Game) {
     this.game = game;
   }
@@ -39,40 +46,32 @@ export default class TrapDoorSlider {
     width: number,
     height: number,
     angle?: number,
-    options?: Partial<TrapDoorOptionsType>
+    options?: Partial<LiftOptionsType>
   ) {
     this.x = x;
     this.y = y;
     this.width = width;
     this.height = height;
-    this.angle = angle ?? 0;
+    this.angle = angle ?? 90;
 
     this.options = {
       ...this.options,
       ...options,
+      rideLength: options?.rideLength ? options.rideLength : this.width,
     };
 
-    const trapdoor1 = Bodies.rectangle(
-      this.width / 2,
+    this.cannon = Bodies.rectangle(
+      0,
       0,
       this.width,
       this.height,
       this.bodyOptions
     );
-    const trapdoor2 = Bodies.rectangle(
-      -(this.width / 2),
-      0,
-      this.width,
-      this.height,
-      this.bodyOptions
-    );
-    this.trapdoors = [trapdoor1, trapdoor2];
-    // const pivot = Bodies.circle(0, 0, 2, this.bodyOptions);
-    // const lever = Bodies.circle(-this.width / 2, 0, 1, this.bodyOptions);
+
     this.body = Body.create({
-      parts: [...this.trapdoors],
+      parts: [this.cannon],
       ...this.bodyOptions,
-      label: ElementLabel.TRAPDOOR_SLIDER,
+      label: ElementLabel.LIFT,
     });
     Body.setPosition(this.body, {
       x: this.x,
@@ -84,12 +83,12 @@ export default class TrapDoorSlider {
     // console.log("added to the world")
   }
 
-  startOpenTrapDoor(intervalT: number) {
-    const interval = setInterval(() => this.openTrapDoor(), intervalT);
+  startShoot(intervalT: number) {
+    const interval = setInterval(() => this.shot(), intervalT);
     this.game.registerTimer(interval);
   }
 
-  openTrapDoor() {
+  shot() {
     const body = this.body;
     // console.log("open trapdoor (slider)", body);
     if (!body) return;
@@ -107,22 +106,19 @@ export default class TrapDoorSlider {
         return;
       }
       index--;
-      this.trapdoors.forEach((trapdoor, i) => {
-        const slideDistance = i === 0 ? -1 : 1;
-        const displacement = this.getTranslationValues(slideDistance);
-        Matter.Body.setPosition(trapdoor, {
-          x: trapdoor.position.x + displacement.x,
-          y: trapdoor.position.y + displacement.y,
-        });
+      const displacement = this.getTranslationValues(2);
+      Matter.Body.setPosition(body, {
+        x: body.position.x + displacement.x,
+        y: body.position.y + displacement.y,
       });
     };
 
     const open = () => {
-      if (index >= this.width / 2) {
+      if (index >= this.options.rideLength) {
         this.game.clearTimer(intervalOpen!);
         // wait before stat closing it
         const timeout = setTimeout(() => {
-          intervalClose = setInterval(close, 30);
+          intervalClose = setInterval(close, this.options.rideSpeed);
           this.game.registerTimer(intervalClose);
           this.game.clearTimer(timeout!);
         }, openTime);
@@ -131,18 +127,15 @@ export default class TrapDoorSlider {
       }
       index++;
 
-      this.trapdoors.forEach((trapdoor, i) => {
-        const slideDistance = i === 0 ? 1 : -1;
-        const displacement = this.getTranslationValues(slideDistance);
-        Matter.Body.setPosition(trapdoor, {
-          x: trapdoor.position.x + displacement.x,
-          y: trapdoor.position.y + displacement.y,
-        });
+      const displacement = this.getTranslationValues(-2);
+      Matter.Body.setPosition(body, {
+        x: body.position.x + displacement.x,
+        y: body.position.y + displacement.y,
       });
     };
 
     // Start expanding
-    intervalOpen = setInterval(open, 30);
+    intervalOpen = setInterval(open, this.options.rideSpeed);
     this.game.registerTimer(intervalOpen);
   }
 

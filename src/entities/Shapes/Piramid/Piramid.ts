@@ -34,7 +34,7 @@ export default class Piramid {
       { x: 70, y: 60 },
       { x: 50, y: 37 },
     ];
-    const middleB = Bodies.fromVertices(0, 18, [v2], this.bodyOptions);
+    const middleB = Bodies.fromVertices(-2, 20, [v2], this.bodyOptions);
 
     const v3 = [
       { x: 55, y: 30 },
@@ -65,13 +65,14 @@ export default class Piramid {
   addTrapDoors() {
     // inside the piramid
     const td1 = new TrapDoor(this.game);
-    td1.create(this.x -3, this.y  - 10, 15, 4, -48);
+    td1.create(this.x -6, this.y  - 10, 15, 4, -48);
     td1.startOpenTrapDoor(2240);
 
     // piramid entry
     const td2 = new TrapDoor(this.game);
-    td2.create(this.x + 10, this.y - 61, 20, 4, 50, {
+    td2.create(this.x + 13, this.y - 61, 20, 4, 50, {
       openTime: 1000,
+      maxAngle: 110
     });
     td2.startOpenTrapDoor(4320);
 
@@ -80,13 +81,13 @@ export default class Piramid {
   addPlanks() {
     const p1W = 53;
     const plank1 = Bodies.rectangle(
-      this.x + p1W / 2 + 35,
-      this.y - 55,
+      this.x + p1W / 2 + 40,
+      this.y - 70,
       p1W,
-      2,
+      5 ,
       this.bodyOptions
     );
-    Body.rotate(plank1, degreesToRadians(-7));
+    Body.rotate(plank1, degreesToRadians(-10));
     World.add(this.game.engine.world, [plank1]);
   }
 }

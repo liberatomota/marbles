@@ -20,11 +20,12 @@ export default class Floor {
 
     this.floorNumber = floorNumber;
 
-    const gameHeight = this.game.height;
+    const gameHeight = this.game.view.viewHeight;
     const numOfFloors = this.level.data.numOfFloors;
     const floorHeight = gameHeight / numOfFloors;
 
-    this.maxY = floorHeight * this.floorNumber;
+    this.maxY = floorHeight * this.floorNumber + this.game.view.top;
     this.minY = this.maxY + floorHeight;
+    console.log("Floor", this.floorNumber, "maxY", this.maxY, "minY", this.minY);
   }
 }

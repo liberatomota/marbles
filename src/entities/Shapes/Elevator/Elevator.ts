@@ -15,7 +15,7 @@ import Color from "../../Color";
 
 const { Body, World, Bodies, Composite } = Matter;
 
-enum RotateToEnum {
+export enum RotateToEnum {
   RIGHT = "right",
   LEFT = "left",
 }
@@ -107,13 +107,24 @@ export default class Elevator {
       pathRadius,
       numElevators,
     } = this.options;
-    // Criar baldes
+
+    const factor = 1 / (numElevators - 1); 
+
+    // Create buckets
     for (let i = 0; i < numElevators; i++) {
-      const factor = 1 / (i + 1) - 0.1;
-      const x = pivot1.position.x + pathRadius;
-      const y = linearInterpolation(this.p1, this.p2, factor).y;
-      let offset = rotateDirection === RotateToEnum.LEFT ? 2 : -2;
-      offset = 0;
+      let x: number;
+      let y: number;
+
+      y = linearInterpolation(this.p1, this.p2, factor * i).y;
+
+      if (i % 2 === 0) {
+        x = pivot1.position.x - pathRadius; 
+      } else {
+        x = pivot2.position.x + pathRadius; 
+      }
+
+      // Adjust offset (optional, left as 0 for now)
+      const offset = rotateDirection === RotateToEnum.LEFT ? 2 : -2;
 
       const bucketsBase = Bodies.rectangle(x, y, 16, 4, bodyOption);
       const bucketsLeft = Bodies.rectangle(

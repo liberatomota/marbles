@@ -20,6 +20,7 @@ export const marble = {
     // gravity: 1,
     // gravitySF: 0.0018,
     // timeScale: 1,
+    radius: 7,
     restitution: 0.6, // Some bounciness
     friction: 0, // Low sliding friction
     frictionAir: 0.009, // Minimal air resistance
