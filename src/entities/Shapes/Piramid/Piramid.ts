@@ -71,7 +71,7 @@ export default class Piramid {
     // piramid entry
     const td2 = new TrapDoor(this.game);
     td2.create(this.x + 13, this.y - 61, 20, 4, 50, {
-      openTime: 1000,
+      openTime: 1700,
       maxAngle: 110
     });
     td2.startOpenTrapDoor(4320);

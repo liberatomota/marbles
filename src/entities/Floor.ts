@@ -10,11 +10,10 @@ export default class Floor {
   maxY: number = 0;
   minY: number = 0;
 
-  constructor(
-    game: Game,
-    level: Level,
-    floorNumber: number
-  ) {
+  middleX: number = 0;
+  middleY: number = 0;
+
+  constructor(game: Game, level: Level, floorNumber: number) {
     this.game = game;
     this.level = level;
 
@@ -26,6 +25,18 @@ export default class Floor {
 
     this.maxY = floorHeight * this.floorNumber + this.game.view.top;
     this.minY = this.maxY + floorHeight;
-    console.log("Floor", this.floorNumber, "maxY", this.maxY, "minY", this.minY);
+
+    this.middleX = this.game.view.middleX;
+    this.middleY = this.maxY + (this.minY - this.maxY) / 2;
+    console.log(
+      "Floor",
+      this.floorNumber,
+      "maxY",
+      this.maxY,
+      "minY",
+      this.minY,
+      "middleX",
+      this.middleX,
+    );
   }
 }
