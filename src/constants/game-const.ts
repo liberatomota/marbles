@@ -21,7 +21,7 @@ const resolutions = {
   ],
 };
 
-export const GAME_RESOLUTION = resolutions["16x9"][2];
+export const GAME_RESOLUTION = resolutions["16x9"][0];
 
 enum LEVEL_NAMES {
   LEVEL_1 = "Marble's Curse",

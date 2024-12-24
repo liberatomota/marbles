@@ -15,6 +15,7 @@ import Lift from "../entities/Shapes/Elevator/Lift";
 import { marble } from "../constants/world";
 import { calculateTriangle } from "../utils/trignometry-utils";
 import Ramp from "../entities/Shapes/Composite/Ramp";
+import Catapult from "../entities/Shapes/Elevator/Catapult";
 
 export default class Level1 {
   game: Game;
@@ -43,6 +44,7 @@ export default class Level1 {
     // FLOOR ONE
     this.startFloorOne();
     this.startFloorTwo();
+    this.startFloorThree();
   }
 
   startFloorOne() {
@@ -62,7 +64,7 @@ export default class Level1 {
     const newY = top + 50;
     const nextPosition = { x: newX, y: newY };
 
-    const numberOfMarbles = 100;
+    const numberOfMarbles = 1;
 
     // ------------------------------------------- Elevators 1
 
@@ -153,7 +155,8 @@ export default class Level1 {
 
     const middleX = floorTwo.middleX;
     const middleY = floorTwo.middleY;
-    
+    console.log("floorTwo", floorTwo)
+
     const newX = middleX - 50;
     const newY = top + 20;
     const nextPosition = { x: newX, y: newY };
@@ -193,8 +196,9 @@ export default class Level1 {
 
     const e1 = new Elevator(g);
     const e1X = middleX - 90;
+    const pivot1X = bottom - middleY + 10;
     e1.create(
-      { x: e1X, y: bottom - 120 },
+      { x: e1X, y: pivot1X },
       { x: e1X, y: bottom + 2 },
       {
         pathRadius: 20,
@@ -203,7 +207,7 @@ export default class Level1 {
       }
     );
     // elevator wall
-    this.rectFactory.create(e1X - 7, bottom - 110, 15, 110, 0);
+    this.rectFactory.create(e1X - 7, pivot1X, 15, bottom - pivot1X, 0);
     // destroyer to the rigth
     const d1 = new DestroyerRect(
       g,
@@ -219,7 +223,7 @@ export default class Level1 {
 
     // top left ramp
     const rampAngle = -5;
-    
+
     const rampY = top + 100;
     const rampWidth = middleX - g.view.left - 100;
     const rampX = middleX - rampWidth;
@@ -258,12 +262,43 @@ export default class Level1 {
       ramp2Angle
     );
     this.rectFactory.create(
-      middleX - 50,
+      middleX - 55,
       bottom - (ramp2Vleg / 2),
       ramp2W,
       gThickeness,
       ramp2Angle
     );
+  }
+
+  startFloorThree() {
+    const floor = this.level.floors[2];
+    const g = this.game;
+
+    const top = floor.maxY;
+    const bottom = floor.minY;
+
+    const middleX = floor.middleX;
+    const middleY = floor.middleY;
+    console.log("floor3", floor)
+
+    const newX = middleX - 50;
+    const newY = top + 20;
+    const nextPosition = { x: newX, y: newY };
+    const destroyerData = { nextPosition };
+
+
+    const label = ElementLabel.GROUND;
+    const gThickeness = 5;
+
+    const catapult = new Catapult(g);
+    catapult.create(
+      middleX,
+      bottom + 10,
+      150,
+      10,
+      110,
+    );
+    catapult.startShoot(2000);
   }
   stop() {
     this.level.floors = [];

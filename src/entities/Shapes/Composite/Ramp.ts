@@ -109,9 +109,9 @@ export default class Ramp {
 
       trapdoorX = rampX + rampWidth + rampInterval / 2;
       if (this.angle < 0) {
-        trapdoorY = rampY + trapdoorVerticalLeg - this.rampThickeness / 2;
+        trapdoorY = rampY + trapdoorVerticalLeg;
       } else {
-        trapdoorY = rampY + trapdoorVerticalLeg + this.rampThickeness / 2;
+        trapdoorY = rampY + trapdoorVerticalLeg;
       }
     }
   }

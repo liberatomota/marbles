@@ -27,7 +27,7 @@ export default class Floor {
     this.minY = this.maxY + floorHeight;
 
     this.middleX = this.game.view.middleX;
-    this.middleY = this.maxY + (this.minY - this.maxY) / 2;
+    this.middleY = this.maxY - (this.minY - this.maxY) / 2;
     console.log(
       "Floor",
       this.floorNumber,

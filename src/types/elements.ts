@@ -11,5 +11,6 @@ export enum ElementLabel {
   DESTROYER = "destroyer",
   DESTROYER_CIRCLES = "destroyercircles",
   CAR= "car",
-  RAMP = "ramp"
+  RAMP = "ramp",
+  WEIGHT = "weight",
 }
